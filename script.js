@@ -312,8 +312,8 @@ const mockData = {
         { 
             id: 7, 
             name: 'Elo', 
-            role: 'Instrumentista/Vocal', 
-            instruments: ['Teclado', 'Vocal'],
+            role: 'Instrumentista/Vocal/Projetor', 
+            instruments: ['Teclado', 'Vocal', 'Projetor'],
             status: 'active',
             phone: '(13) 99999-1007',
             email: 'elo@email.com',
@@ -374,8 +374,8 @@ const mockData = {
         { 
             id: 14, 
             name: 'Ana', 
-            role: 'Vocal', 
-            instruments: ['Vocal'],
+            role: 'Vocal/Projetor', 
+            instruments: ['Vocal', 'Projetor'],
             status: 'active',
             phone: '(13) 99999-2006',
             email: 'ana@email.com',
@@ -394,8 +394,8 @@ const mockData = {
         { 
             id: 16, 
             name: 'Eduarda', 
-            role: 'Vocal', 
-            instruments: ['Vocal'],
+            role: 'Vocal/Projetor', 
+            instruments: ['Vocal', 'Projetor'],
             status: 'active',
             phone: '(13) 99999-2008',
             email: 'eduarda@email.com',
@@ -404,8 +404,8 @@ const mockData = {
         { 
             id: 17, 
             name: 'Flávia', 
-            role: 'Vocal', 
-            instruments: ['Vocal'],
+            role: 'Vocal/Projetor', 
+            instruments: ['Vocal', 'Projetor'],
             status: 'active',
             phone: '(13) 99999-2009',
             email: 'flavia@email.com',
@@ -444,142 +444,26 @@ const mockData = {
         { 
             id: 21, 
             name: 'Rafael', 
-            role: 'Líder Roots', 
-            instruments: [],
+            role: 'Líder Roots/Projetor', 
+            instruments: ['Projetor'],
             status: 'active',
             phone: '(13) 99999-3001',
             email: 'rafael@email.com',
             photo: 'foto/Rafa.jpeg'
         },
+        { 
+            id: 22, 
+            name: 'Murillo', 
+            role: 'Projetor', 
+            instruments: ['Projetor'],
+            status: 'active',
+            phone: '(13) 99999-4001',
+            email: 'murillo@email.com',
+            photo: 'foto/Murillo.jpeg'
+        },
     ],
     schedules: [
-        {
-            id: 0,
-            date: 'SÁBADO - 07/06',
-            status: 'published',
-            roles: {
-                'ministro': 'Stephanie',
-                'back_vocal': ['Ana', 'Ane'],
-                'violao': 'Vitória',
-                'guitarra': 'Daniel',
-                'teclado': 'Elo',
-                'bateria': 'Luma',
-                'baixo': 'Juninho'
-            },
-            louvores: [],
-            songs: ['Bondade de Deus', 'Reckless Love', 'Oceans']
-        },
-        {
-            id: 1,
-            date: 'DOMINGO - 08/06',
-            status: 'published',
-            roles: {
-                'ministro': 'Pastora Lilian',
-                'back_vocal': ['Stephanie', 'Ana'],
-                'violao': 'Vitória',
-                'guitarra': 'Daniel',
-                'teclado': 'Elo',
-                'bateria': 'Luma',
-                'baixo': 'Juninho'
-            },
-            songs: ['Águas Purificadoras', 'Bondade de Deus', 'Tua Graça Me Basta']
-        },
-        {
-            id: 2,
-            date: 'DOMINGO - 15/06',
-            status: 'published',
-            roles: {
-                'ministro': 'Pastor Rodrigo',
-                'back_vocal': ['Fernando', 'Kerbelin'],
-                'violao': 'Pastor Rodrigo',
-                'guitarra': 'Fernando',
-                'teclado': 'Fernando',
-                'bateria': 'Kaue',
-                'baixo': 'Kauê'
-            },
-            louvores: [],
-            songs: ['Santo Pra Sempre', 'Porque Ele Vive', 'Bondade de Deus']
-        },
-        {
-            id: 3,
-            date: 'DOMINGO - 22/06',
-            status: 'published',
-            roles: {
-                'ministro': 'Stephanie',
-                'back_vocal': ['Ane', 'Eduarda'],
-                'violao': 'Daniel',
-                'guitarra': 'Daniel',
-                'teclado': 'Dudu',
-                'bateria': 'Dudu',
-                'baixo': 'Juninho'
-            },
-            louvores: [],
-            songs: ['Reckless Love', 'What A Beautiful Name', 'Oceans']
-        },
-        {
-            id: 4,
-            date: 'DOMINGO - 29/06',
-            status: 'draft',
-            roles: {
-                'ministro': 'Flávia',
-                'back_vocal': ['Larissa'],
-                'violao': 'Vitória',
-                'guitarra': 'N/A',
-                'teclado': 'Elo',
-                'bateria': 'Luma',
-                'baixo': 'N/A'
-            },
-            louvores: [],
-            songs: []
-        },
-        {
-            id: 5,
-            date: 'DOMINGO - 06/07',
-            status: 'draft',
-            roles: {
-                'ministro': '',
-                'back_vocal': [],
-                'violao': '',
-                'guitarra': '',
-                'teclado': '',
-                'bateria': '',
-                'baixo': ''
-            },
-            louvores: [],
-            songs: []
-        },
-        {
-            id: 6,
-            date: 'DOMINGO - 13/07',
-            status: 'draft',
-            roles: {
-                'ministro': 'Pastora Lilian',
-                'back_vocal': ['Stephanie'],
-                'violao': 'Pastor Rodrigo',
-                'guitarra': 'Daniel',
-                'teclado': 'Fernando',
-                'bateria': 'Kaue',
-                'baixo': 'Juninho'
-            },
-            louvores: [],
-            songs: []
-        },
-        {
-            id: 7,
-            date: 'QUARTA-FEIRA - 16/07',
-            status: 'draft',
-            roles: {
-                'ministro': 'Pastor Rodrigo',
-                'back_vocal': ['N/A'],
-                'violao': 'Pastor Rodrigo',
-                'guitarra': 'Daniel',
-                'teclado': 'N/A',
-                'bateria': 'Kaue',
-                'baixo': 'Juninho'
-            },
-            louvores: [],
-            songs: []
-        }
+        // Sistema iniciará sem escalas - os líderes criarão as escalas reais aqui
     ],
     songs: [
         { id: 1, title: 'Águas Purificadoras', artist: 'Diante do Trono', key: 'G', bpm: 72 },
@@ -595,6 +479,12 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
     setupEventListeners();
     loadMockData();
+    
+            // FORÇAR ATUALIZAÇÃO IMEDIATA DOS MEMBROS (bypass do setInterval)
+        console.log('🚀 Forçando atualização imediata dos membros...');
+        forceUpdateMembersDisplay();
+        console.log('✅ Membros carregados imediatamente:', AppState.members.length);
+    
     // Verificar se já existe uma sessão ativa
     const sessionResult = checkUserSession();
     if (sessionResult.isValid) {
@@ -602,10 +492,19 @@ document.addEventListener('DOMContentLoaded', function() {
         showDashboard();
         // Atualizar dados da sessão
         updateSessionData();
+        
+        // FORÇAR ATUALIZAÇÃO COMPLETA IMEDIATA DO DASHBOARD
+        updateDashboardData();
+        console.log('✅ Dashboard atualizado imediatamente');
+        
+        // FORÇAR RENDERIZAÇÃO DOS MEMBROS IMEDIATAMENTE
+        renderMembers();
+        console.log('✅ Membros renderizados imediatamente na inicialização');
+        
         // Update time every minute
         setInterval(updateCurrentDateTime, 60000);
-        // Update dashboard data every 30 seconds
-        setInterval(updateDashboardData, 30000);
+        // Update dashboard data every 5 seconds (muito mais rápido)
+        setInterval(updateDashboardData, 5000);
         // Verificar sessão a cada 5 minutos
         setInterval(checkAndMaintainSession, 5 * 60 * 1000);
     } else {
@@ -706,6 +605,9 @@ function loadMockData() {
         AppState.schedules = [...mockData.schedules];
     }
     AppState.members = [...mockData.members];
+    console.log('✅ Membros carregados em loadMockData():', AppState.members.length);
+    console.log('🔧 Verificando se Murillo está incluído:', AppState.members.find(m => m.name === 'Murillo') ? 'SIM' : 'NÃO');
+    
     const savedSongs = localStorage.getItem('feedsSongs');
     if (savedSongs) {
         try {
@@ -748,6 +650,8 @@ function saveToLocalStorage() {
         localStorage.setItem('feedsActivities', JSON.stringify(AppState.activities));
         localStorage.setItem('feedsPlaylists', JSON.stringify(AppState.playlists));
     } catch (error) {
+        console.error('Erro ao salvar no localStorage:', error);
+        showErrorMessage('Erro ao salvar dados localmente');
     }
 }
 // === SISTEMA DE SESSÃO PERSISTENTE === //
@@ -791,6 +695,7 @@ function checkUserSession() {
             session: session 
         };
     } catch (error) {
+        console.error('Erro ao verificar sessão:', error);
         return { isValid: false, reason: 'error' };
     }
 }
@@ -803,6 +708,7 @@ function updateSessionData() {
             localStorage.setItem('feedsUserSession', JSON.stringify(session));
         }
     } catch (error) {
+        console.warn('Erro ao atualizar dados da sessão:', error);
     }
 }
 function clearSession() {
@@ -810,6 +716,7 @@ function clearSession() {
         localStorage.removeItem('feedsUserSession');
         localStorage.removeItem('feedsUser');
     } catch (error) {
+        console.warn('Erro ao limpar sessão:', error);
     }
 }
 function generateSessionId() {
@@ -849,6 +756,7 @@ function extendSession() {
             localStorage.setItem('feedsUserSession', JSON.stringify(session));
         }
     } catch (error) {
+        console.warn('Erro ao estender sessão:', error);
     }
 }
 function setupEventListeners() {
@@ -948,9 +856,11 @@ function handleLogin(e) {
             // Garantir que as playlists sejam inicializadas
             initializePlaylists();
             showDashboard();
-            // Forçar atualização das ações rápidas após login
+            // Forçar atualização COMPLETA após login (bypass setInterval)
             setTimeout(() => {
                 updateQuickActions();
+                forceUpdateMembersDisplay(); // FORÇA exibição instantânea dos membros
+                console.log('⚡ ATUALIZAÇÃO FORÇADA PÓS-LOGIN CONCLUÍDA');
             }, 100);
         } else {
             showErrorMessage('Usuário ou senha incorretos! Verifique suas credenciais.');
@@ -1088,8 +998,12 @@ function showDashboard() {
     updateUserAvatar();
     // Navigate to home section
     navigateToSection('home');
-    // Load dashboard data
+    // Load dashboard data IMEDIATAMENTE
     updateDashboardData();
+    // FORÇAR contagem de membros imediata também (bypass do setInterval)
+    forceUpdateMembersDisplay();
+    console.log('✅ Dashboard e membros atualizados INSTANTANEAMENTE em showDashboard()');
+    
     // Inicializar Google Calendar
     initializeGoogleCalendar();
     // Inicializar playlists após login
@@ -1123,10 +1037,12 @@ function navigateToSection(sectionName) {
         } else {
             // Debugging - listar todas as seções
             allSections.forEach(section => {
+                console.warn('Seção disponível:', section.id);
             });
         }
         AppState.currentSection = sectionName;
     } catch (error) {
+        console.error('Erro ao navegar para seção:', sectionName, error);
     }
     // Load section-specific data and update UI based on permissions
     switch(sectionName) {
@@ -1457,8 +1373,9 @@ function updateMembersCount() {
     // Contar por categoria
     const vocalists = activeMembers.filter(m => m.role === 'Vocal' || m.instruments?.includes('Vocal')).length;
     const instrumentalists = activeMembers.filter(m => m.role === 'Instrumentista' || m.instruments?.some(i => i !== 'Vocal')).length;
+    const projectors = activeMembers.filter(m => m.role === 'Projetor' || m.instruments?.includes('Projetor')).length;
     if (memberDetail) {
-        memberDetail.textContent = `👥 ${vocalists} vocais, ${instrumentalists} instrumentistas`;
+        memberDetail.textContent = `👥 ${vocalists} vocais, ${instrumentalists} instrumentistas, ${projectors} projetores`;
         memberDetail.classList.add('live-data');
     }
 }
@@ -1772,8 +1689,26 @@ function generateActivitiesCSV(activities) {
 }
 // === SISTEMA DE ATIVIDADES === //
 function addActivity(type, title, description, status = 'info') {
+    // Criar ID único baseado em timestamp mais dados únicos
+    const uniqueId = `${Date.now()}_${type}_${title}_${AppState.currentUser?.name || 'Sistema'}`;
+    
+    // Verificar se já existe uma atividade similar recente (últimos 5 segundos)
+    const recentThreshold = Date.now() - 5000; // 5 segundos
+    const isDuplicate = AppState.activities.some(activity => {
+        const activityTime = new Date(activity.timestamp).getTime();
+        return activityTime > recentThreshold && 
+               activity.type === type && 
+               activity.title === title && 
+               activity.description === description;
+    });
+    
+    if (isDuplicate) {
+        console.log('🚫 Atividade duplicada detectada e ignorada:', title);
+        return;
+    }
+    
     const activity = {
-        id: Date.now(),
+        id: uniqueId,
         type: type,
         title: title,
         description: description,
@@ -1782,18 +1717,24 @@ function addActivity(type, title, description, status = 'info') {
         timestamp: new Date().toISOString(),
         timeAgo: 'Agora mesmo'
     };
+    
     // Adicionar no início da lista
     AppState.activities.unshift(activity);
+    
     // Manter apenas as últimas 50 atividades
     if (AppState.activities.length > 50) {
         AppState.activities = AppState.activities.slice(0, 50);
     }
+    
     // Salvar no localStorage
     saveToLocalStorage();
+    
     // Atualizar interface se estivermos na seção home
     if (AppState.currentSection === 'home') {
         updateRecentActivities();
     }
+    
+    console.log('✅ Nova atividade adicionada:', title);
 }
 function updateRecentActivities() {
     const activityList = document.querySelector('.activity-list');
@@ -2042,6 +1983,18 @@ function createScheduleItem(schedule) {
                         </div>
                     </div>
                 </div>
+                <div class="team-section projector">
+                    <div class="section-header">
+                        <i class="fas fa-desktop"></i>
+                        <span>Projeção</span>
+                    </div>
+                    <div class="members-list">
+                        <div class="member-item ${getStatusClass(schedule.roles.projetor)}">
+                            <span class="role">Projetor:</span>
+                            <span class="name">${getDisplayValue(schedule.roles.projetor)}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
             <!-- Seção de Louvores -->
             <div class="louvores-section">
@@ -2117,14 +2070,17 @@ async function fetchGoogleCalendarEvents() {
             const data = await response.json();
             if (data.error) {
                 if (data.error.code === 404) {
+                console.warn('Calendário não encontrado:', calendarioId);
                 }
                 continue; // Tentar próximo calendário
             }
             if (data.items && data.items.length > 0) {
                 allEvents = allEvents.concat(data.items);
             } else {
+                console.log('Nenhum evento encontrado no calendário:', calendarioId);
             }
         } catch (error) {
+            console.warn('Erro ao acessar calendário:', calendarioId, error);
             continue; // Tentar próximo calendário
         }
     }
@@ -2212,6 +2168,7 @@ async function updateNextScheduleFromCalendar() {
             updateNextSchedule();
         }
     } catch (error) {
+        console.warn('Erro ao atualizar escala do calendário:', error);
         // Fallback para dados locais
         updateNextSchedule();
     }
@@ -2251,6 +2208,7 @@ async function updateNextEventFromCalendar() {
             `;
         }
     } catch (error) {
+        console.warn('Erro ao atualizar próximo evento:', error);
     }
 }
 // Função para inicializar integração com Google Calendar
@@ -2496,6 +2454,7 @@ function addLouvorToSchedule(videoId, title, channel, thumbnail, duration) {
     try {
         saveToLocalStorage();
     } catch (error) {
+        console.error('Erro ao salvar dados:', error);
         showErrorMessage('Erro ao salvar os dados');
         return;
     }
@@ -2504,6 +2463,7 @@ function addLouvorToSchedule(videoId, title, channel, thumbnail, duration) {
     if (louvorsList) {
         louvorsList.innerHTML = renderLouvoresList(schedule.louvores, scheduleId);
     } else {
+        console.warn('Elemento louvores não encontrado para scheduleId:', scheduleId);
     }
     // Fechar modal
     closeLouvorModal();
@@ -2513,6 +2473,7 @@ function addLouvorToSchedule(videoId, title, channel, thumbnail, duration) {
     try {
         addActivity('louvor_add', 'Louvor adicionado', `"${title}" foi adicionado à escala`, 'success');
     } catch (error) {
+        console.warn('Erro ao adicionar atividade:', error);
     }
 }
 function removeLouvor(scheduleId, videoId) {
@@ -2607,6 +2568,9 @@ function openScheduleModal() {
     modal.classList.add('show');
     // Populate member selects
     populateScheduleSelects();
+    
+    // Add event listener for date input
+    setupDateInput();
 }
 // Função para verificar permissões
 function hasPermission(action) {
@@ -2639,6 +2603,16 @@ function closeScheduleModal() {
     // Limpar seleções de backvocals
     clearAllBackVocalSelections();
     updateBackVocalHiddenInput();
+    
+    // Limpar campos de data
+    const dateInput = document.getElementById('scheduleDateInput');
+    const datePreview = document.getElementById('datePreview');
+    if (dateInput) dateInput.value = '';
+    if (datePreview) {
+        datePreview.innerHTML = '<i class="fas fa-calendar-alt"></i><span>Selecione uma data acima</span>';
+        datePreview.classList.remove('populated');
+    }
+    
     currentEditingScheduleId = null;
 }
 function populateScheduleSelects() {
@@ -2649,8 +2623,9 @@ function populateScheduleSelects() {
     const tecladoSelect = document.querySelector('select[name="teclado"]');
     const bateriaSelect = document.querySelector('select[name="bateria"]');
     const baixoSelect = document.querySelector('select[name="baixo"]');
+    const projetorSelect = document.querySelector('select[name="projetor"]');
     // Clear existing options (except first)
-    [vocalSelect, violaoSelect, guitarraSelect, tecladoSelect, bateriaSelect, baixoSelect].forEach(select => {
+    [vocalSelect, violaoSelect, guitarraSelect, tecladoSelect, bateriaSelect, baixoSelect, projetorSelect].forEach(select => {
         if (select) {
             while (select.children.length > 1) {
                 select.removeChild(select.lastChild);
@@ -2714,6 +2689,14 @@ function populateScheduleSelects() {
                 option.value = member.name;
                 option.textContent = member.name;
                 baixoSelect.appendChild(option);
+            }
+        }
+        if (member.instruments.includes('Projetor') || ['Elo', 'Ana', 'Flávia', 'Eduarda', 'Murillo', 'Rafael'].includes(member.name)) {
+            if (projetorSelect) {
+                const option = document.createElement('option');
+                option.value = member.name;
+                option.textContent = member.name;
+                projetorSelect.appendChild(option);
             }
         }
     });
@@ -2832,7 +2815,8 @@ function handleScheduleSubmit(e) {
             guitarra: document.querySelector('select[name="guitarra"]').value,
             teclado: document.querySelector('select[name="teclado"]').value,
             bateria: document.querySelector('select[name="bateria"]').value,
-            baixo: document.querySelector('select[name="baixo"]').value
+            baixo: document.querySelector('select[name="baixo"]').value,
+            projetor: document.querySelector('select[name="projetor"]').value
         }
     };
     if (isEditing) {
@@ -2875,6 +2859,13 @@ function handleScheduleSubmit(e) {
         showSuccessMessage('Escala criada com sucesso!');
     }
     saveToLocalStorage();
+    
+    // Forçar sincronização imediata
+    if (syncManager && syncManager.isInitialized) {
+        syncManager.syncSchedules(AppState.schedules);
+        console.log('🔄 Sincronização forçada após salvar escala');
+    }
+    
     closeScheduleModal();
     renderSchedules();
     updateDashboardData();
@@ -3565,12 +3556,16 @@ function enhancedEditSchedule(scheduleId) {
     // Fill form with schedule data
     document.getElementById('scheduleId').value = schedule.id;
     document.getElementById('scheduleDate').value = schedule.date;
+    
+    // Convert existing date format back to date input if needed
+    parseExistingScheduleDate(schedule.date);
             document.getElementById('vocalPrincipal').value = schedule.roles.ministro || '';
     document.getElementById('violaoSelect').value = schedule.roles.violao || '';
     document.getElementById('guitarraSelect').value = schedule.roles.guitarra || '';
     document.getElementById('tecladoSelect').value = schedule.roles.teclado || '';
     document.getElementById('bateriaSelect').value = schedule.roles.bateria || '';
     document.getElementById('baixoSelect').value = schedule.roles.baixo || '';
+    document.getElementById('projetorSelect').value = schedule.roles.projetor || '';
     // Handle back vocal (novo seletor)
     if (schedule.roles.back_vocal) {
         setBackVocalValues(schedule.roles.back_vocal);
@@ -4665,7 +4660,18 @@ function addToPlaylist(videoId, title, channel, thumbnail) {
     const song = { videoId, title, channel, thumbnail, addedAt: new Date().toISOString() };
     AppState.playlists[username].push(song);
     saveToLocalStorage();
-    loadPlaylists(); // Recarregar para atualizar contadores
+    
+    // Forçar sincronização imediata com Firebase
+    if (syncManager && syncManager.isInitialized) {
+        syncManager.syncPlaylists(AppState.playlists);
+        console.log('🔄 Playlist sincronizada após adicionar música');
+    }
+    
+    // Recarregar para atualizar contadores
+    setTimeout(() => {
+        loadPlaylists();
+    }, 100);
+    
     showSuccessMessage(`"${title}" adicionada à sua playlist`);
     // Registrar atividade
     addActivity('playlist', `Adicionou "${title}" ao repertório`, `${AppState.currentUser.name} adicionou "${title}" ao repertório`, 'success');
@@ -4704,6 +4710,13 @@ function removeFromPlaylist(videoId, playlistOwner = null) {
             AppState.playlists[username].splice(songIndex, 1);
             // Salvar no localStorage
             saveToLocalStorage();
+            
+            // Forçar sincronização imediata com Firebase
+            if (syncManager && syncManager.isInitialized) {
+                syncManager.syncPlaylists(AppState.playlists);
+                console.log('🔄 Playlist sincronizada após remover música');
+            }
+            
             // Mostrar notificação de sucesso personalizada
             showSuccessMessage(`🎵 "${songToRemove.title}" foi removida da sua playlist!`);
             // Registrar atividade detalhada
@@ -5937,7 +5950,7 @@ class FirebaseSyncManager {
     
     getUserId() {
         // ID FIXO PARA TODA A BANDA - TODOS COMPARTILHAM OS MESMOS DADOS
-        const BAND_SHARED_ID = 'ministerio_louvor_ibr_2024';
+        const BAND_SHARED_ID = 'ministerio_louvor_ibr_shared';
         localStorage.setItem('feeds_user_id', BAND_SHARED_ID);
         return BAND_SHARED_ID;
     }
@@ -5952,15 +5965,27 @@ class FirebaseSyncManager {
             const playlistsListener = window.firebaseOnValue(playlistsRef, (snapshot) => {
                 const serverData = snapshot.val();
                 if (serverData && JSON.stringify(serverData) !== JSON.stringify(AppState.playlists)) {
+                    console.log('🔄 Playlists atualizadas do Firebase:', serverData);
                     AppState.playlists = serverData;
                     localStorage.setItem('feedsPlaylists', JSON.stringify(serverData));
                     
-                    // Atualizar interface se estiver na seção repertório
-                    if (AppState.currentSection === 'repertorio') {
+                    // Atualizar interface sempre
+                    setTimeout(() => {
                         loadPlaylists();
-                    }
+                        updateDashboardData(); // Atualizar dashboard também
+                        
+                        // Se estiver na seção de repertório, forçar update visual
+                        if (AppState.currentSection === 'songs') {
+                            // Forçar refresh da página de repertório
+                            const playlistsGrid = document.getElementById('playlistsGrid');
+                            if (playlistsGrid) {
+                                loadPlaylists();
+                            }
+                        }
+                    }, 200);
                     
-                    showInfoMessage('🔄 Playlists atualizadas por outro membro da banda');
+                    // Log silencioso ao invés de notificação
+                    console.log('🔄 Playlists atualizadas por outro membro da banda');
                 }
             });
             
@@ -5970,16 +5995,36 @@ class FirebaseSyncManager {
             const schedulesRef = window.firebaseRef(this.database, `data/${this.userId}/schedules`);
             const schedulesListener = window.firebaseOnValue(schedulesRef, (snapshot) => {
                 const serverData = snapshot.val();
-                if (serverData && JSON.stringify(serverData) !== JSON.stringify(AppState.schedules)) {
-                    AppState.schedules = serverData;
-                    localStorage.setItem('feedsSchedules', JSON.stringify(serverData));
+                if (serverData) {
+                    const currentDataString = JSON.stringify(AppState.schedules);
+                    const serverDataString = JSON.stringify(serverData);
                     
-                    // Atualizar interface se estiver na seção escalas
-                    if (AppState.currentSection === 'schedule') {
+                    if (serverDataString !== currentDataString) {
+                        console.log('🔄 Escalas atualizadas do Firebase:', serverData);
+                        
+                        // Evitar loops - comparar último timestamp
+                        const hasRealChanges = !AppState.schedules.length || 
+                                             serverData.length !== AppState.schedules.length ||
+                                             serverData.some((item, index) => 
+                                                 !AppState.schedules[index] || 
+                                                 item.id !== AppState.schedules[index].id ||
+                                                 JSON.stringify(item) !== JSON.stringify(AppState.schedules[index])
+                                             );
+                        
+                        if (hasRealChanges) {
+                            AppState.schedules = [...serverData]; // Clonar array
+                            localStorage.setItem('feedsSchedules', JSON.stringify(serverData));
+                            
+                                                // Atualizar interface sempre
+                    setTimeout(() => {
                         renderSchedules();
-                    }
+                        updateDashboardData(); // Atualizar dashboard também
+                    }, 100);
                     
-                    showInfoMessage('🔄 Escalas atualizadas por outro membro da banda');
+                    // Log silencioso ao invés de notificação
+                    console.log('🔄 Escalas atualizadas por outro membro da banda');
+                        }
+                    }
                 }
             });
             
@@ -5989,14 +6034,44 @@ class FirebaseSyncManager {
             const activitiesRef = window.firebaseRef(this.database, `data/${this.userId}/activities`);
             const activitiesListener = window.firebaseOnValue(activitiesRef, (snapshot) => {
                 const serverData = snapshot.val();
-                if (serverData && JSON.stringify(serverData) !== JSON.stringify(AppState.activities)) {
-                    AppState.activities = serverData;
-                    localStorage.setItem('feedsActivities', JSON.stringify(serverData));
+                if (serverData && Array.isArray(serverData)) {
+                    // Verificar se há mudanças reais antes de atualizar
+                    const currentDataString = JSON.stringify(AppState.activities);
+                    const serverDataString = JSON.stringify(serverData);
                     
-                    // Atualizar interface se necessário
-                    updateRecentActivities();
-                    
-                    showInfoMessage('🔄 Atividades atualizadas por outro membro da banda');
+                    if (serverDataString !== currentDataString) {
+                        // Mesclar atividades sem duplicar
+                        const mergedActivities = [...serverData];
+                        
+                        // Adicionar atividades locais que não estão no servidor
+                        AppState.activities.forEach(localActivity => {
+                            const existsInServer = mergedActivities.some(serverActivity => 
+                                serverActivity.id === localActivity.id ||
+                                (serverActivity.timestamp === localActivity.timestamp &&
+                                 serverActivity.type === localActivity.type &&
+                                 serverActivity.title === localActivity.title)
+                            );
+                            
+                            if (!existsInServer) {
+                                mergedActivities.unshift(localActivity);
+                            }
+                        });
+                        
+                        // Ordenar por timestamp (mais recente primeiro)
+                        mergedActivities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                        
+                        // Manter apenas as últimas 50
+                        const finalActivities = mergedActivities.slice(0, 50);
+                        
+                        AppState.activities = finalActivities;
+                        localStorage.setItem('feedsActivities', JSON.stringify(finalActivities));
+                        
+                        // Atualizar interface se necessário
+                        updateRecentActivities();
+                        
+                        // Log silencioso ao invés de notificação
+                        console.log('🔄 Atividades sincronizadas sem duplicação');
+                    }
                 }
             });
             
@@ -6010,28 +6085,36 @@ class FirebaseSyncManager {
     // Sincronizar playlists
     async syncPlaylists(playlists) {
         if (!this.database || !this.isOnline || !this.isInitialized) {
+            console.warn('⚠️ Sincronização de playlists cancelada - Firebase não disponível');
             return;
         }
         
         try {
+            console.log('📤 Sincronizando playlists para Firebase:', playlists);
             const playlistsRef = window.firebaseRef(this.database, `data/${this.userId}/playlists`);
             await window.firebaseSet(playlistsRef, playlists);
+            console.log('✅ Playlists sincronizadas com sucesso');
         } catch (error) {
-            console.warn('⚠️ Erro na sincronização das playlists:', error);
+            console.error('❌ Erro na sincronização das playlists:', error);
+            showErrorMessage('Erro ao sincronizar playlists com o servidor');
         }
     }
     
     // Sincronizar escalas
     async syncSchedules(schedules) {
         if (!this.database || !this.isOnline || !this.isInitialized) {
+            console.warn('⚠️ Sincronização de escalas cancelada - Firebase não disponível');
             return;
         }
         
         try {
+            console.log('📤 Sincronizando escalas para Firebase:', schedules);
             const schedulesRef = window.firebaseRef(this.database, `data/${this.userId}/schedules`);
             await window.firebaseSet(schedulesRef, schedules);
+            console.log('✅ Escalas sincronizadas com sucesso');
         } catch (error) {
-            console.warn('⚠️ Erro na sincronização das escalas:', error);
+            console.error('❌ Erro na sincronização das escalas:', error);
+            showErrorMessage('Erro ao sincronizar escalas com o servidor');
         }
     }
     
@@ -6147,29 +6230,30 @@ saveToLocalStorage = function() {
 // Interceptar loadMockData para carregar do Firebase primeiro
 const originalLoadMockData = loadMockData;
 loadMockData = async function() {
-    // Aguardar sincronização estar pronta
+    console.log('🔄 Iniciando carregamento de dados...');
+    
+    // Aguardar sincronização estar pronta (máximo 5 segundos)
     let attempts = 0;
-    while (!syncManager && attempts < 10) {
-        await new Promise(resolve => setTimeout(resolve, 300));
+    while (!syncManager && attempts < 20) {
+        await new Promise(resolve => setTimeout(resolve, 250));
         attempts++;
     }
     
     // Tentar carregar do Firebase primeiro se disponível
     if (syncManager && syncManager.isInitialized) {
+        console.log('📡 Carregando dados do Firebase...');
         const serverData = await syncManager.loadFromServer();
         if (serverData && (Object.keys(serverData.playlists || {}).length > 0 || (serverData.schedules || []).length > 0)) {
+            console.log('✅ Dados encontrados no Firebase, usando dados do servidor');
             // Se há dados no servidor, usá-los
             if (serverData.playlists) AppState.playlists = serverData.playlists;
             if (serverData.schedules) AppState.schedules = serverData.schedules;
             
             // Ainda precisamos carregar outros dados locais
             try {
-                const savedMembers = localStorage.getItem('feedsMembers');
-                if (savedMembers) {
-                    AppState.members = JSON.parse(savedMembers);
-                } else {
-                    AppState.members = mockData.members;
-                }
+                // MEMBROS SEMPRE VÊM DO MOCKDATA (dados fixos da banda)
+                AppState.members = [...mockData.members];
+                console.log('✅ Membros carregados do mockData:', AppState.members.length);
                 
                 const savedSongs = localStorage.getItem('feedsSongs');
                 if (savedSongs) {
@@ -6184,15 +6268,48 @@ loadMockData = async function() {
                 } else {
                     AppState.activities = [];
                 }
+                
+                // Limpar atividades duplicadas ao carregar
+                if (AppState.activities.length > 0) {
+                    setTimeout(() => {
+                        console.log('🧹 Verificando atividades duplicadas...');
+                        const originalLength = AppState.activities.length;
+                        const cleaned = [];
+                        const seen = new Map();
+                        
+                        AppState.activities.forEach(activity => {
+                            const key = `${activity.type}_${activity.title}_${activity.description}_${activity.timestamp}`;
+                            if (!seen.has(key)) {
+                                seen.set(key, true);
+                                cleaned.push(activity);
+                            }
+                        });
+                        
+                        if (cleaned.length !== originalLength) {
+                            AppState.activities = cleaned;
+                            saveToLocalStorage();
+                            console.log(`✅ ${originalLength - cleaned.length} atividades duplicadas removidas automaticamente`);
+                        }
+                    }, 1000);
+                }
             } catch (error) {
                 console.error('Erro ao carregar dados complementares:', error);
             }
             
+            console.log('📊 Estado final:', { 
+                schedules: AppState.schedules.length, 
+                playlists: Object.keys(AppState.playlists).length 
+            });
             return;
+        } else {
+            console.log('📭 Nenhum dado encontrado no Firebase');
         }
+    } else {
+        console.log('⚠️ Firebase não disponível, usando dados locais');
     }
     
     // Se não há dados no Firebase ou não está disponível, executar carregamento original
+    console.log('📂 Carregando dados locais/mockados');
     originalLoadMockData();
 };
 
@@ -6215,6 +6332,61 @@ function showSyncStatus() {
     showInfoMessage(statusMsg);
 }
 
+// Função para limpar atividades duplicadas existentes
+function cleanDuplicateActivities() {
+    const cleaned = [];
+    const seen = new Map();
+    
+    AppState.activities.forEach(activity => {
+        // Criar chave única baseada em conteúdo
+        const key = `${activity.type}_${activity.title}_${activity.description}_${activity.timestamp}`;
+        
+        if (!seen.has(key)) {
+            seen.set(key, true);
+            cleaned.push(activity);
+        } else {
+            console.log('🧹 Removendo atividade duplicada:', activity.title);
+        }
+    });
+    
+    if (cleaned.length !== AppState.activities.length) {
+        AppState.activities = cleaned;
+        saveToLocalStorage();
+        updateRecentActivities();
+        showSuccessMessage(`🧹 ${AppState.activities.length - cleaned.length} atividades duplicadas removidas!`);
+        console.log(`✅ Limpeza concluída: ${cleaned.length} atividades únicas mantidas`);
+    } else {
+        showInfoMessage('✅ Nenhuma atividade duplicada encontrada');
+    }
+}
+
+// Inicializar Firebase IMEDIATAMENTE quando disponível
+window.addEventListener('firebaseReady', function() {
+    console.log('🔥 Firebase pronto! Inicializando sincronização...');
+    
+    // Inicializar Firebase Sync imediatamente
+    if (!syncManager) {
+        syncManager = new FirebaseSyncManager();
+        console.log('✅ FirebaseSyncManager criado');
+    }
+});
+
+// Aguardar Firebase estar disponível com polling
+function waitForFirebase() {
+    const checkFirebase = () => {
+        if (window.firebaseDB) {
+            console.log('🔥 Firebase detectado via polling, inicializando...');
+            if (!syncManager) {
+                syncManager = new FirebaseSyncManager();
+                console.log('✅ FirebaseSyncManager criado via polling');
+            }
+        } else {
+            setTimeout(checkFirebase, 500);
+        }
+    };
+    checkFirebase();
+}
+
 // Inicializar sistema de eventos quando a página carregar
 document.addEventListener('DOMContentLoaded', function() {
     // Aguardar um pouco para garantir que tudo carregou
@@ -6222,13 +6394,871 @@ document.addEventListener('DOMContentLoaded', function() {
         initializeAIChat();
         eventsSystem.init();
         
-        // Inicializar Firebase Sync
-        if (!syncManager) {
-            syncManager = new FirebaseSyncManager();
+        // Tentar inicializar Firebase imediatamente ou aguardar
+        if (window.firebaseDB) {
+            if (!syncManager) {
+                syncManager = new FirebaseSyncManager();
+                console.log('✅ FirebaseSyncManager criado no DOMContentLoaded');
+            }
+        } else {
+            // Se Firebase não está pronto, aguardar
+            waitForFirebase();
         }
     }, 1000);
 });
 
 // Comandos globais para debug
 window.showFirebaseStatus = showSyncStatus;
+window.cleanDuplicateActivities = cleanDuplicateActivities;
 window.syncManager = () => syncManager;
+
+// Função para debug das atividades
+window.debugActivities = function() {
+    console.log('📊 Total de atividades:', AppState.activities.length);
+    console.log('📋 Últimas 10 atividades:', AppState.activities.slice(0, 10));
+    
+    // Verificar duplicatas potenciais
+    const grouped = {};
+    AppState.activities.forEach(activity => {
+        const key = `${activity.type}_${activity.title}`;
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push(activity);
+    });
+    
+    const duplicates = Object.entries(grouped).filter(([key, activities]) => activities.length > 1);
+    if (duplicates.length > 0) {
+        console.warn('⚠️ Possíveis duplicatas detectadas:', duplicates);
+        showInfoMessage(`⚠️ ${duplicates.length} grupos de atividades com possíveis duplicatas encontrados - verifique o console`);
+    } else {
+        console.log('✅ Nenhuma duplicata detectada');
+        showInfoMessage('✅ Nenhuma duplicata de atividades encontrada');
+    }
+};
+
+// Função para testar sincronização
+window.testSync = function() {
+    if (!syncManager || !syncManager.isInitialized) {
+        console.error('❌ Firebase não inicializado');
+        return;
+    }
+    
+    console.log('🧪 Testando sincronização...');
+    console.log('Current schedules:', AppState.schedules);
+    console.log('Current playlists:', AppState.playlists);
+    
+    // Forçar sincronização manual
+    syncManager.syncSchedules(AppState.schedules);
+    syncManager.syncPlaylists(AppState.playlists);
+    
+    showInfoMessage('🧪 Teste de sincronização executado - verifique o console');
+};
+
+// Função para limpar dados Firebase
+window.clearFirebaseData = function() {
+    if (!syncManager || !syncManager.isInitialized) {
+        console.error('❌ Firebase não inicializado');
+        return;
+    }
+    
+    const confirm = window.confirm('⚠️ ATENÇÃO: Isso irá apagar TODOS os dados do Firebase. Continuar?');
+    if (!confirm) return;
+    
+    // Limpar escalas
+    syncManager.syncSchedules([]);
+    // Limpar playlists
+    syncManager.syncPlaylists({});
+    
+    showInfoMessage('🗑️ Dados do Firebase limpos');
+};
+
+// Função para forçar recarregamento dos dados
+window.forceReload = function() {
+    if (syncManager && syncManager.isInitialized) {
+        console.log('🔄 Forçando recarregamento dos dados...');
+        syncManager.loadFromServer().then(() => {
+            renderSchedules();
+            updateDashboardData();
+            loadPlaylists();
+            showSuccessMessage('✅ Dados recarregados com sucesso!');
+        });
+    } else {
+        console.log('📂 Recarregando dados locais...');
+        loadMockData();
+        renderSchedules();
+        updateDashboardData();
+        loadPlaylists();
+        showInfoMessage('✅ Dados locais recarregados!');
+    }
+};
+
+// Função para debug completo
+window.debugState = function() {
+    console.log('=== DEBUG DO ESTADO COMPLETO ===');
+    console.log('🔥 Firebase Manager:', syncManager);
+    console.log('📊 AppState:', AppState);
+    console.log('🌐 Firebase DB:', window.firebaseDB);
+    console.log('📋 Current Section:', AppState.currentSection);
+    console.log('👤 Current User:', AppState.currentUser);
+    
+    if (syncManager) {
+        console.log('🔄 Sync Status:', {
+            initialized: syncManager.isInitialized,
+            online: syncManager.isOnline,
+            userId: syncManager.userId,
+            listeners: syncManager.listeners.size
+        });
+    }
+    
+    showInfoMessage('🔍 Estado debugado - verifique o console');
+};
+
+// Função para forçar atualização das playlists (incluindo contadores)
+window.forcePlaylistUpdate = function() {
+    console.log('🎵 Forçando atualização das playlists...');
+    
+    if (AppState.currentSection === 'songs') {
+        loadPlaylists();
+        showInfoMessage('✅ Playlists atualizadas!');
+    } else {
+        console.log('ℹ️ Não está na seção de repertório');
+    }
+    
+    // Forçar sincronização também
+    if (syncManager && syncManager.isInitialized) {
+        syncManager.syncPlaylists(AppState.playlists);
+    }
+};
+
+// === FUNÇÃO PARA LIMPEZA COMPLETA DO SISTEMA === //
+window.resetSystemCompletely = function() {
+    console.log('🧹 INICIANDO LIMPEZA COMPLETA DO SISTEMA...');
+    
+    // Confirmação dupla antes de limpar
+    const confirm1 = window.confirm('⚠️ ATENÇÃO: Isso irá apagar TODAS as escalas e atividades do sistema. Continuar?');
+    if (!confirm1) return;
+    
+    const confirm2 = window.confirm('🚨 ÚLTIMA CHANCE: Todos os dados serão perdidos. Tem certeza absoluta?');
+    if (!confirm2) return;
+    
+    // 1. Limpar localStorage
+    console.log('🗑️ Limpando localStorage...');
+    localStorage.removeItem('feedsSchedules');
+    localStorage.removeItem('feedsActivities');
+    localStorage.removeItem('feedsPlaylists');
+    localStorage.removeItem('feedsSongs');
+    localStorage.removeItem('feedsMembers');
+    localStorage.removeItem('feedsUserSession');
+    localStorage.removeItem('feedsUser');
+    
+    // 2. Resetar AppState para dados limpos
+    console.log('🔄 Resetando dados do sistema...');
+    AppState.schedules = [...mockData.schedules]; // Array vazio agora
+    AppState.activities = [];
+    AppState.playlists = [];
+    
+    // 3. Forçar sincronização com Firebase (dados limpos)
+    console.log('🔥 Sincronizando com Firebase...');
+    if (syncManager && syncManager.isInitialized) {
+        syncManager.syncSchedules([]);
+        syncManager.syncActivities([]);
+        syncManager.syncPlaylists([]);
+    }
+    
+    // 4. Atualizar interface
+    console.log('🖥️ Atualizando interface...');
+    if (AppState.currentSection === 'schedules') {
+        renderSchedules();
+    }
+    if (AppState.currentSection === 'home') {
+        updateRecentActivities();
+        updateNextSchedule();
+    }
+    
+    // 5. Salvar estado limpo
+    saveToLocalStorage();
+    
+    console.log('✅ SISTEMA COMPLETAMENTE LIMPO!');
+    console.log('📋 Escalas:', AppState.schedules.length);
+    console.log('📋 Atividades:', AppState.activities.length);
+    
+    showSuccessMessage('🧹 Sistema completamente limpo! Recarregando página...');
+    
+    // 6. Recarregar página após 2 segundos
+    setTimeout(() => {
+        window.location.reload();
+    }, 2000);
+};
+
+// Função para debug rápido
+window.checkSystemData = function() {
+    console.log('📊 DADOS ATUAIS DO SISTEMA:');
+    console.log('Escalas (mockData):', mockData.schedules.length);
+    console.log('Escalas (AppState):', AppState.schedules.length);
+    console.log('Atividades:', AppState.activities.length);
+    console.log('localStorage schedules:', localStorage.getItem('feedsSchedules') ? JSON.parse(localStorage.getItem('feedsSchedules')).length : 'vazio');
+    console.log('localStorage activities:', localStorage.getItem('feedsActivities') ? JSON.parse(localStorage.getItem('feedsActivities')).length : 'vazio');
+    
+    // Mostrar detalhes das escalas
+    console.log('📋 Escalas detalhadas:', AppState.schedules);
+};
+
+// === FUNÇÃO PARA FORÇAR EXCLUSÃO DE ESCALAS ESPECÍFICAS === //
+window.forceDeleteAllSchedules = function() {
+    console.log('🗑️ FORÇANDO EXCLUSÃO DE TODAS AS ESCALAS...');
+    
+    const confirm1 = window.confirm('⚠️ Isso irá forçar a exclusão de TODAS as escalas, incluindo as que não conseguem ser excluídas normalmente. Continuar?');
+    if (!confirm1) return;
+    
+    // 1. Limpar completamente AppState.schedules
+    AppState.schedules = [];
+    console.log('✅ AppState.schedules limpo');
+    
+    // 2. Sobrescrever localStorage com array vazio
+    localStorage.setItem('feedsSchedules', JSON.stringify([]));
+    console.log('✅ localStorage limpo');
+    
+    // 3. Forçar sincronização Firebase com array vazio
+    if (syncManager && syncManager.isInitialized) {
+        syncManager.syncSchedules([]);
+        console.log('✅ Firebase sincronizado com array vazio');
+    }
+    
+    // 4. Atualizar interface imediatamente
+    renderSchedules();
+    updateDashboardData();
+    updateNextSchedule();
+    console.log('✅ Interface atualizada');
+    
+    showSuccessMessage('🗑️ Todas as escalas foram forçadamente excluídas!');
+    
+    // 5. Recarregar página para garantir
+    setTimeout(() => {
+        console.log('🔄 Recarregando página para confirmar limpeza...');
+        window.location.reload();
+    }, 2000);
+};
+
+// Função para excluir uma escala específica (bypass das permissões)
+window.forceDeleteSchedule = function(scheduleId) {
+    console.log(`🗑️ Forçando exclusão da escala ID: ${scheduleId}`);
+    
+    // Encontrar a escala
+    const scheduleIndex = AppState.schedules.findIndex(s => s.id == scheduleId);
+    
+    if (scheduleIndex === -1) {
+        console.log('❌ Escala não encontrada no AppState');
+        return;
+    }
+    
+    const schedule = AppState.schedules[scheduleIndex];
+    console.log('📋 Escala encontrada:', schedule);
+    
+    // Remover do AppState
+    AppState.schedules.splice(scheduleIndex, 1);
+    console.log('✅ Escala removida do AppState');
+    
+    // Salvar no localStorage
+    saveToLocalStorage();
+    console.log('✅ localStorage atualizado');
+    
+    // Sincronizar com Firebase
+    if (syncManager && syncManager.isInitialized) {
+        syncManager.syncSchedules(AppState.schedules);
+        console.log('✅ Firebase sincronizado');
+    }
+    
+    // Atualizar interface
+    renderSchedules();
+    updateDashboardData();
+    
+    showSuccessMessage(`🗑️ Escala "${schedule.date}" foi forçadamente excluída!`);
+    
+    console.log('✅ Exclusão forçada concluída');
+};
+
+// === FUNÇÕES PARA DEBUG E RESTAURAÇÃO DE MEMBROS === //
+window.debugMembers = function() {
+    console.log('👥 === DEBUG DOS MEMBROS ===');
+    console.log('📊 mockData.members (dados originais):', mockData.members.length, 'membros');
+    console.log('📊 AppState.members (dados carregados):', AppState.members.length, 'membros');
+    
+    console.log('📋 Detalhes do mockData.members:');
+    mockData.members.forEach((member, index) => {
+        console.log(`${index + 1}. ${member.name} - ${member.role} - Status: ${member.status}`);
+    });
+    
+    console.log('📋 Detalhes do AppState.members:');
+    AppState.members.forEach((member, index) => {
+        console.log(`${index + 1}. ${member.name} - ${member.role} - Status: ${member.status}`);
+    });
+    
+    // Verificar membros ativos
+    const activeMockMembers = mockData.members.filter(m => m.status === 'active');
+    const activeAppMembers = AppState.members.filter(m => m.status === 'active');
+    
+    console.log('✅ Membros ativos no mockData:', activeMockMembers.length);
+    console.log('✅ Membros ativos no AppState:', activeAppMembers.length);
+    
+    // Verificar localStorage
+    const savedMembers = localStorage.getItem('feedsMembers');
+    console.log('💾 localStorage feedsMembers:', savedMembers ? 'Existe' : 'Não existe');
+    if (savedMembers) {
+        try {
+            const parsed = JSON.parse(savedMembers);
+            console.log('💾 Membros no localStorage:', parsed.length);
+        } catch (e) {
+            console.log('❌ Erro ao parsear localStorage:', e);
+        }
+    }
+    
+    showInfoMessage('👥 Debug dos membros concluído - verifique o console');
+};
+
+window.restoreMembers = function() {
+    console.log('🔄 RESTAURANDO MEMBROS DO SISTEMA...');
+    
+    // 1. Forçar carregamento dos membros do mockData
+    AppState.members = [...mockData.members];
+    console.log('✅ AppState.members restaurado do mockData:', AppState.members.length, 'membros');
+    
+    // 2. Remover qualquer dados de membros do localStorage (se existir)
+    localStorage.removeItem('feedsMembers');
+    console.log('✅ localStorage feedsMembers removido');
+    
+    // 3. Verificar se todos os membros estão ativos
+    const activeMembers = AppState.members.filter(m => m.status === 'active');
+    console.log('✅ Membros ativos após restauração:', activeMembers.length);
+    
+    // 4. Forçar atualização do contador no dashboard
+    updateMembersCount();
+    console.log('✅ Contador de membros atualizado');
+    
+    // 5. Se estiver na seção de membros, atualizar a renderização
+    if (AppState.currentSection === 'members') {
+        renderMembers();
+        console.log('✅ Lista de membros re-renderizada');
+    }
+    
+    // 6. Atualizar dashboard completo
+    updateDashboardData();
+    console.log('✅ Dashboard atualizado');
+    
+    showSuccessMessage(`🔄 Membros restaurados! Total: ${AppState.members.length} membros (${activeMembers.length} ativos)`);
+    
+    console.log('✅ RESTAURAÇÃO DOS MEMBROS CONCLUÍDA!');
+};
+
+window.forceMembersUpdate = function() {
+    console.log('🔄 FORÇANDO ATUALIZAÇÃO DOS MEMBROS...');
+    
+    // Forçar recarga dos dados
+    loadMockData();
+    console.log('✅ Dados recarregados');
+    
+    // Forçar atualização do contador
+    updateMembersCount();
+    console.log('✅ Contador atualizado');
+    
+    // Verificar resultado
+    const activeMembers = AppState.members.filter(m => m.status === 'active');
+    console.log(`📊 Resultado: ${activeMembers.length} membros ativos de ${AppState.members.length} total`);
+    
+    showInfoMessage(`🔄 Atualização forçada: ${activeMembers.length} membros ativos`);
+};
+
+// Função para verificar e corrigir o problema dos membros
+window.fixMembersCount = function() {
+    console.log('🔧 DIAGNÓSTICO E CORREÇÃO DOS MEMBROS...');
+    
+    // 1. Verificar se existe dados de membros corrompidos
+    debugMembers();
+    
+    // 2. Se não há membros no AppState, restaurar
+    if (AppState.members.length === 0) {
+        console.log('🚨 PROBLEMA: AppState.members está vazio! Restaurando...');
+        restoreMembers();
+        return;
+    }
+    
+    // 3. Se há membros mas nenhum está ativo, verificar status
+    const activeMembers = AppState.members.filter(m => m.status === 'active');
+    if (activeMembers.length === 0) {
+        console.log('🚨 PROBLEMA: Nenhum membro está com status "active"!');
+        console.log('🔧 Corrigindo status dos membros...');
+        
+        AppState.members.forEach(member => {
+            if (!member.status || member.status !== 'active') {
+                member.status = 'active';
+                console.log(`✅ Status corrigido para: ${member.name}`);
+            }
+        });
+        
+        updateMembersCount();
+        showSuccessMessage('🔧 Status dos membros corrigido!');
+        return;
+    }
+    
+    // 4. Se há membros ativos mas o contador não atualiza, forçar update
+    console.log('🔧 Forçando atualização do contador...');
+    updateMembersCount();
+    
+    console.log('✅ DIAGNÓSTICO CONCLUÍDO');
+};
+
+// Função para limpar dados corrompidos do localStorage e forçar correção
+window.fixMembersPermanently = function() {
+    console.log('🔧 CORREÇÃO PERMANENTE DOS MEMBROS...');
+    
+    // 1. Remover qualquer dados de membros do localStorage
+    localStorage.removeItem('feedsMembers');
+    console.log('✅ localStorage feedsMembers removido');
+    
+    // 2. Garantir que AppState tenha os dados corretos
+    AppState.members = [...mockData.members];
+    console.log('✅ AppState.members restaurado:', AppState.members.length, 'membros');
+    
+    // 3. Verificar se todos estão ativos
+    const activeMembers = AppState.members.filter(m => m.status === 'active');
+    console.log('✅ Membros ativos:', activeMembers.length);
+    
+    // 4. Atualizar dashboard
+    updateMembersCount();
+    updateDashboardData();
+    console.log('✅ Dashboard atualizado');
+    
+    showSuccessMessage(`🔧 Correção permanente aplicada! ${activeMembers.length} membros ativos`);
+    
+    console.log('✅ CORREÇÃO PERMANENTE CONCLUÍDA - Problema não deve mais ocorrer no F5');
+};
+
+// Função para forçar exibição INSTANTÂNEA dos membros
+window.fixMembersInstantly = function() {
+    console.log('⚡ CORREÇÃO INSTANTÂNEA DOS MEMBROS...');
+    
+    // 1. Limpar localStorage corrompido
+    localStorage.removeItem('feedsMembers');
+    
+    // 2. Forçar carregamento do mockData
+    AppState.members = [...mockData.members];
+    
+    // 3. FORÇAR atualização IMEDIATA do DOM (sem esperar setInterval)
+    forceUpdateMembersDisplay();
+    
+    // 4. Verificar resultado
+    const activeMembers = AppState.members.filter(m => m.status === 'active');
+    
+    console.log('⚡ RESULTADO INSTANTÂNEO:');
+    console.log('📊 Total de membros:', AppState.members.length);
+    console.log('✅ Membros ativos:', activeMembers.length);
+    
+    showSuccessMessage(`⚡ Membros exibidos instantaneamente! ${activeMembers.length} ativos`);
+    
+    return activeMembers.length;
+};
+
+// Função que FORÇA atualização imediata do display sem depender de setInterval
+window.forceUpdateMembersDisplay = function() {
+    console.log('🔥 FORÇANDO ATUALIZAÇÃO IMEDIATA DO DISPLAY...');
+    
+    // Garantir que os dados estão corretos
+    if (AppState.members.length === 0) {
+        AppState.members = [...mockData.members];
+        console.log('🔄 Dados dos membros restaurados:', AppState.members.length);
+    }
+    
+    // Contar membros ativos
+    const activeMembers = AppState.members.filter(member => member.status === 'active');
+    console.log('✅ Membros ativos encontrados:', activeMembers.length);
+    
+    // ATUALIZAR DOM DIRETAMENTE (bypass do setInterval)
+    const memberCountElement = document.getElementById('activeMembersCount');
+    const memberDetail = memberCountElement?.parentElement.querySelector('.stat-detail');
+    
+    if (memberCountElement) {
+        memberCountElement.textContent = activeMembers.length;
+        console.log('✅ Elemento activeMembersCount atualizado:', activeMembers.length);
+    } else {
+        console.warn('❌ Elemento activeMembersCount não encontrado');
+        // Tentar encontrar por alternativa
+        const alternativeElement = document.querySelector('[id*="member"], [class*="member-count"]');
+        if (alternativeElement) {
+            alternativeElement.textContent = activeMembers.length;
+            console.log('✅ Elemento alternativo encontrado e atualizado');
+        }
+    }
+    
+    // Atualizar detalhes
+    if (memberDetail) {
+        const vocalists = activeMembers.filter(m => m.role === 'Vocal' || m.instruments?.includes('Vocal')).length;
+        const instrumentalists = activeMembers.filter(m => m.role === 'Instrumentista' || m.instruments?.some(i => i !== 'Vocal')).length;
+        const projectors = activeMembers.filter(m => m.role === 'Projetor' || m.instruments?.includes('Projetor')).length;
+        memberDetail.textContent = `👥 ${vocalists} vocais, ${instrumentalists} instrumentistas, ${projectors} projetores`;
+        memberDetail.classList.add('live-data');
+        console.log('✅ Detalhes atualizados:', `${vocalists} vocais, ${instrumentalists} instrumentistas, ${projectors} projetores`);
+    }
+    
+    console.log('🔥 ATUALIZAÇÃO FORÇADA CONCLUÍDA!');
+    return activeMembers.length;
+};
+
+// === FUNÇÕES DE DATA SEMI-AUTOMÁTICA === //
+function setupDateInput() {
+    const dateInput = document.getElementById('scheduleDateInput');
+    const datePreview = document.getElementById('datePreview');
+    const hiddenDateInput = document.getElementById('scheduleDate');
+    
+    if (dateInput) {
+        dateInput.addEventListener('change', function() {
+            updateDatePreview(this.value);
+        });
+    }
+}
+
+function updateDatePreview(dateValue) {
+    const datePreview = document.getElementById('datePreview');
+    const hiddenDateInput = document.getElementById('scheduleDate');
+    
+    if (!dateValue) {
+        datePreview.innerHTML = '<i class="fas fa-calendar-alt"></i><span>Selecione uma data acima</span>';
+        datePreview.classList.remove('populated');
+        hiddenDateInput.value = '';
+        return;
+    }
+    
+    // Converter date para formato brasileiro
+    const selectedDate = new Date(dateValue + 'T12:00:00');
+    const dayOfWeek = selectedDate.getDay();
+    const day = selectedDate.getDate().toString().padStart(2, '0');
+    const month = (selectedDate.getMonth() + 1).toString().padStart(2, '0');
+    
+    // Array de dias da semana
+    const weekDays = [
+        'DOMINGO', 'SEGUNDA-FEIRA', 'TERÇA-FEIRA', 'QUARTA-FEIRA', 
+        'QUINTA-FEIRA', 'SEXTA-FEIRA', 'SÁBADO'
+    ];
+    
+    // Gerar formato final: "DOMINGO - 15/12"
+    const formattedDate = `${weekDays[dayOfWeek]} - ${day}/${month}`;
+    
+    // Atualizar preview
+    datePreview.innerHTML = `<i class="fas fa-check-circle"></i><span>${formattedDate}</span>`;
+    datePreview.classList.add('populated');
+    
+    // Atualizar campo hidden
+    hiddenDateInput.value = formattedDate;
+}
+
+function getDayName(dayIndex) {
+    const days = [
+        'DOMINGO', 'SEGUNDA-FEIRA', 'TERÇA-FEIRA', 'QUARTA-FEIRA', 
+        'QUINTA-FEIRA', 'SEXTA-FEIRA', 'SÁBADO'
+    ];
+    return days[dayIndex];
+}
+
+function parseExistingScheduleDate(dateString) {
+    // Função para converter data no formato "DOMINGO - 15/12" para date input
+    const dateInput = document.getElementById('scheduleDateInput');
+    const datePreview = document.getElementById('datePreview');
+    
+    if (!dateString || !dateInput) return;
+    
+    // Extrair dia e mês da string (ex: "DOMINGO - 15/12")
+    const dateMatch = dateString.match(/(\d{1,2})\/(\d{1,2})/);
+    if (dateMatch) {
+        const day = dateMatch[1].padStart(2, '0');
+        const month = dateMatch[2].padStart(2, '0');
+        const currentYear = new Date().getFullYear();
+        
+        // Criar formato YYYY-MM-DD para o input date
+        const inputDateValue = `${currentYear}-${month}-${day}`;
+        
+        // Preencher o input
+        dateInput.value = inputDateValue;
+        
+        // Atualizar preview
+        datePreview.innerHTML = `<i class="fas fa-check-circle"></i><span>${dateString}</span>`;
+        datePreview.classList.add('populated');
+    }
+}
+
+// Função para TESTAR se a atualização instantânea está funcionando
+window.testInstantUpdate = function() {
+    console.log('🧪 INICIANDO TESTE DE ATUALIZAÇÃO INSTANTÂNEA...');
+    
+    const startTime = Date.now();
+    
+    // 1. Limpar e restaurar dados
+    fixMembersInstantly();
+    
+    // 2. Verificar se foi realmente instantâneo
+    const endTime = Date.now();
+    const timeTaken = endTime - startTime;
+    
+    // 3. Verificar resultado no DOM
+    const memberCountElement = document.getElementById('activeMembersCount');
+    const currentCount = memberCountElement ? memberCountElement.textContent : 'não encontrado';
+    
+    console.log('🧪 RESULTADO DO TESTE:');
+    console.log('⏱️ Tempo decorrido:', timeTaken + 'ms');
+    console.log('📊 Valor exibido:', currentCount);
+    console.log('✅ Dados no AppState:', AppState.members.filter(m => m.status === 'active').length);
+    
+    // 4. Diagnóstico
+    if (timeTaken < 500 && currentCount == '21') {
+        console.log('🎉 SUCESSO! Atualização instantânea funcionando perfeitamente!');
+        showSuccessMessage(`🎉 Teste aprovado! Atualizou em ${timeTaken}ms - ${currentCount} membros`);
+        return true;
+    } else {
+        console.warn('⚠️ FALHA! Ainda há problemas na atualização instantânea');
+        showErrorMessage(`⚠️ Teste falhou: ${timeTaken}ms, mostra ${currentCount}`);
+        return false;
+    }
+};
+
+// === FUNÇÃO PARA TESTAR OS UPGRADES === //
+window.testUpgrades = function() {
+    console.log('🚀 TESTANDO UPGRADES IMPLEMENTADOS...');
+    
+    // Teste 1: Verificar se Murillo foi adicionado
+    const murillo = AppState.members.find(m => m.name === 'Murillo');
+    console.log('📋 Teste 1 - Murillo adicionado:', murillo ? '✅ SIM' : '❌ NÃO');
+    if (murillo) {
+        console.log('   - Role:', murillo.role);
+        console.log('   - Instruments:', murillo.instruments);
+    }
+    
+    // Teste 2: Verificar contagem de projetores
+    const projectors = AppState.members.filter(m => 
+        m.role === 'Projetor' || 
+        m.instruments?.includes('Projetor') ||
+        ['Elo', 'Ana', 'Flávia', 'Eduarda', 'Murillo', 'Rafael'].includes(m.name)
+    );
+    console.log('📋 Teste 2 - Membros disponíveis para Projetor:', projectors.length);
+    projectors.forEach(p => console.log(`   - ${p.name} (${p.role})`));
+    
+    // Teste 3: Verificar se campo de data existe
+    const dateInput = document.getElementById('scheduleDateInput');
+    const datePreview = document.getElementById('datePreview');
+    console.log('📋 Teste 3 - Campo de data semi-automática:', dateInput ? '✅ SIM' : '❌ NÃO');
+    console.log('📋 Teste 4 - Preview de data:', datePreview ? '✅ SIM' : '❌ NÃO');
+    
+    // Teste 5: Verificar se campo Projetor existe no formulário
+    const projetorSelect = document.getElementById('projetorSelect');
+    console.log('📋 Teste 5 - Campo Projetor no formulário:', projetorSelect ? '✅ SIM' : '❌ NÃO');
+    
+    // Resumo
+    const totalTests = 5;
+    const passedTests = [murillo, projectors.length > 0, dateInput, datePreview, projetorSelect].filter(Boolean).length;
+    
+    console.log(`🎯 RESULTADO: ${passedTests}/${totalTests} testes aprovados`);
+    
+    if (passedTests === totalTests) {
+        showSuccessMessage('🎉 Todos os upgrades funcionando perfeitamente!');
+        return true;
+    } else {
+        showErrorMessage(`⚠️ ${totalTests - passedTests} testes falharam. Verifique o console.`);
+        return false;
+    }
+};
+
+// === FUNÇÃO PARA VERIFICAR PROJETORES === //
+window.verificarProjetores = function() {
+    console.log('📽️ VERIFICANDO TODOS OS PROJETORES...');
+    
+    const projetoresEsperados = ['Elo', 'Ana', 'Flávia', 'Eduarda', 'Murillo', 'Rafael'];
+    const projetoresEncontrados = [];
+    
+    projetoresEsperados.forEach(nome => {
+        const membro = AppState.members.find(m => m.name === nome);
+        if (membro && membro.instruments.includes('Projetor')) {
+            projetoresEncontrados.push({
+                nome: membro.name,
+                role: membro.role,
+                instruments: membro.instruments
+            });
+            console.log(`✅ ${nome}: ${membro.role} - Instrumentos: [${membro.instruments.join(', ')}]`);
+        } else {
+            console.log(`❌ ${nome}: NÃO encontrado ou sem cargo de Projetor`);
+        }
+    });
+    
+    console.log(`\n📊 RESULTADO:`);
+    console.log(`📽️ Projetores encontrados: ${projetoresEncontrados.length}/${projetoresEsperados.length}`);
+    console.log(`📋 Total de membros: ${AppState.members.length}`);
+    
+    if (projetoresEncontrados.length === projetoresEsperados.length) {
+        showSuccessMessage(`🎉 Todos os ${projetoresEsperados.length} projetores foram adicionados com sucesso!`);
+        console.log('🎯 Status: TODOS OS PROJETORES CONFIGURADOS ✅');
+        return true;
+    } else {
+        showErrorMessage(`⚠️ Apenas ${projetoresEncontrados.length} de ${projetoresEsperados.length} projetores configurados`);
+        return false;
+    }
+};
+
+// === FUNÇÃO PARA DIAGNOSTICAR PROBLEMAS NO DASHBOARD === //
+window.diagnosticarDashboard = function() {
+    console.log('🔍 INICIANDO DIAGNÓSTICO COMPLETO DO DASHBOARD...');
+    
+    const problemas = [];
+    const sucessos = [];
+    
+    // 1. Verificar elemento de data/hora
+    const dateTimeElement = document.getElementById('currentDateTime');
+    if (dateTimeElement) {
+        if (dateTimeElement.textContent && dateTimeElement.textContent.trim() !== '') {
+            sucessos.push('✅ Data/Hora: funcionando (' + dateTimeElement.textContent.substring(0, 20) + '...)');
+            console.log('✅ Data/Hora elemento:', dateTimeElement.textContent);
+        } else {
+            problemas.push('❌ Data/Hora: elemento vazio');
+            console.log('❌ Data/Hora elemento encontrado mas vazio');
+            // Tentar forçar atualização
+            updateCurrentDateTime();
+        }
+    } else {
+        problemas.push('❌ Data/Hora: elemento não encontrado');
+        console.log('❌ Elemento currentDateTime não encontrado no DOM');
+    }
+    
+    // 2. Verificar contagem de membros
+    const memberCountElement = document.getElementById('activeMembersCount');
+    if (memberCountElement) {
+        if (memberCountElement.textContent && memberCountElement.textContent.trim() !== '' && memberCountElement.textContent !== 'Carregando...') {
+            sucessos.push('✅ Membros: funcionando (' + memberCountElement.textContent + ')');
+            console.log('✅ Membros:', memberCountElement.textContent);
+        } else {
+            problemas.push('❌ Membros: carregando infinito');
+            console.log('❌ Membros carregando infinito:', memberCountElement.textContent);
+        }
+    } else {
+        problemas.push('❌ Membros: elemento não encontrado');
+    }
+    
+    // 3. Verificar repertório musical
+    const songsCountElement = document.getElementById('songsCount');
+    if (songsCountElement) {
+        if (songsCountElement.textContent && songsCountElement.textContent.trim() !== '' && songsCountElement.textContent !== 'Carregando...') {
+            sucessos.push('✅ Repertório: funcionando (' + songsCountElement.textContent + ')');
+            console.log('✅ Repertório:', songsCountElement.textContent);
+        } else {
+            problemas.push('❌ Repertório: carregando infinito');
+            console.log('❌ Repertório carregando infinito:', songsCountElement.textContent);
+        }
+    } else {
+        problemas.push('❌ Repertório: elemento não encontrado');
+    }
+    
+    // 4. Verificar próximo evento
+    const nextEventElement = document.getElementById('nextEvent');
+    if (nextEventElement) {
+        if (nextEventElement.textContent && nextEventElement.textContent.trim() !== '' && nextEventElement.textContent !== 'Carregando...') {
+            sucessos.push('✅ Próximo Evento: funcionando (' + nextEventElement.textContent + ')');
+            console.log('✅ Próximo Evento:', nextEventElement.textContent);
+        } else {
+            problemas.push('❌ Próximo Evento: carregando infinito');
+            console.log('❌ Próximo Evento carregando infinito:', nextEventElement.textContent);
+        }
+    } else {
+        problemas.push('❌ Próximo Evento: elemento não encontrado');
+    }
+    
+    // 5. Verificar próxima escala
+    const nextScheduleElement = document.getElementById('nextSchedule');
+    if (nextScheduleElement) {
+        if (nextScheduleElement.textContent && nextScheduleElement.textContent.trim() !== '' && nextScheduleElement.textContent !== 'Carregando...') {
+            sucessos.push('✅ Próxima Escala: funcionando (' + nextScheduleElement.textContent + ')');
+            console.log('✅ Próxima Escala:', nextScheduleElement.textContent);
+        } else {
+            problemas.push('❌ Próxima Escala: carregando infinito');
+            console.log('❌ Próxima Escala carregando infinito:', nextScheduleElement.textContent);
+        }
+    } else {
+        problemas.push('❌ Próxima Escala: elemento não encontrado');
+    }
+    
+    // Relatório final
+    console.log('\n📊 RELATÓRIO DO DIAGNÓSTICO:');
+    console.log(`✅ Sucessos: ${sucessos.length}`);
+    sucessos.forEach(s => console.log('  ' + s));
+    console.log(`❌ Problemas: ${problemas.length}`);
+    problemas.forEach(p => console.log('  ' + p));
+    
+    if (problemas.length === 0) {
+        showSuccessMessage('🎉 Dashboard funcionando perfeitamente!');
+        return true;
+    } else {
+        showErrorMessage(`⚠️ ${problemas.length} problemas detectados no dashboard. Verifique o console.`);
+        return false;
+    }
+};
+
+// === FUNÇÃO PARA CORRIGIR PROBLEMAS DO DASHBOARD === //
+window.corrigirDashboard = function() {
+    console.log('🛠️ INICIANDO CORREÇÃO DO DASHBOARD...');
+    
+    // Forçar atualização de tudo
+    try {
+        console.log('🔄 Forçando atualização de data/hora...');
+        updateCurrentDateTime();
+        
+        console.log('🔄 Forçando atualização do dashboard...');
+        updateDashboardData();
+        
+        console.log('🔄 Forçando atualização instantânea de membros...');
+        fixMembersInstantly();
+        
+        setTimeout(() => {
+            diagnosticarDashboard();
+        }, 1000);
+        
+        showSuccessMessage('🛠️ Tentativa de correção executada!');
+        
+    } catch (error) {
+        console.error('❌ Erro durante correção:', error);
+        showErrorMessage('❌ Erro durante a correção: ' + error.message);
+    }
+};
+
+// === FUNÇÃO PARA VERIFICAR FOTOS DOS MEMBROS === //
+window.verificarFotosMembros = function() {
+    console.log('📸 VERIFICANDO FOTOS DE TODOS OS MEMBROS...');
+    
+    const membrosComFoto = [];
+    const membrosSemFoto = [];
+    
+    AppState.members.forEach(membro => {
+        if (membro.photo && membro.photo.trim() !== '') {
+            membrosComFoto.push({
+                nome: membro.name,
+                role: membro.role,
+                foto: membro.photo
+            });
+            console.log(`✅ ${membro.name}: ${membro.photo}`);
+        } else {
+            membrosSemFoto.push({
+                nome: membro.name,
+                role: membro.role
+            });
+            console.log(`❌ ${membro.name}: SEM FOTO`);
+        }
+    });
+    
+    console.log(`\n📊 RESULTADO DAS FOTOS:`);
+    console.log(`✅ Membros COM foto: ${membrosComFoto.length}`);
+    membrosComFoto.forEach(m => console.log(`   - ${m.nome}: ${m.foto}`));
+    
+    console.log(`❌ Membros SEM foto: ${membrosSemFoto.length}`);
+    membrosSemFoto.forEach(m => console.log(`   - ${m.nome} (${m.role})`));
+    
+    console.log(`📋 Total de membros: ${AppState.members.length}`);
+    
+    if (membrosSemFoto.length === 0) {
+        showSuccessMessage(`🎉 Todos os ${AppState.members.length} membros têm fotos configuradas!`);
+        console.log('🎯 Status: TODAS AS FOTOS CONFIGURADAS ✅');
+        return true;
+    } else {
+        showInfoMessage(`📸 ${membrosComFoto.length} membros com fotos, ${membrosSemFoto.length} sem fotos. Verifique o console.`);
+        return false;
+    }
+};

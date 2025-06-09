@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔄 Teste de Sincronização - Firebase</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #2563eb;
+            background: #f0f9ff;
+        }
+        .btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #1d4ed8;
+        }
+        .btn-danger {
+            background: #dc2626;
+        }
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+        .log {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+        .test-area {
+            border: 1px solid #e5e7eb;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .escalas-list {
+            background: #f9fafb;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .escala-item {
+            background: white;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 3px;
+            border-left: 3px solid #10b981;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Teste de Sincronização do Firebase</h1>
+        
+        <div class="status" id="firebaseStatus">
+            📡 Verificando status do Firebase...
+        </div>
+        
+        <div class="test-area">
+            <h3>🧪 Testes de Sincronização</h3>
+            <button class="btn" onclick="testarConexao()">🔗 Testar Conexão</button>
+            <button class="btn" onclick="criarEscalaTeste()">➕ Criar Escala Teste</button>
+            <button class="btn" onclick="carregarEscalas()">📥 Carregar Escalas</button>
+            <button class="btn btn-danger" onclick="limparDados()">🗑️ Limpar Dados</button>
+            <button class="btn" onclick="limparLog()">🧹 Limpar Log</button>
+        </div>
+
+        <div class="test-area">
+            <h3>📋 Escalas Atuais</h3>
+            <div id="escalasList" class="escalas-list">
+                Carregando escalas...
+            </div>
+        </div>
+
+        <div class="test-area">
+            <h3>📊 Log de Eventos</h3>
+            <div id="log" class="log">
+                Aguardando eventos...
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, set, get, onValue, push } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        // Configuração Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBYz-aJOWxvPD5BRzzPkS19FQEMfU3Ycm0",
+            authDomain: "ministeriodelouvor-46a34.firebaseapp.com",
+            databaseURL: "https://ministeriodelouvor-46a34-default-rtdb.firebaseio.com",
+            projectId: "ministeriodelouvor-46a34",
+            storageBucket: "ministeriodelouvor-46a34.firebasestorage.app",
+            messagingSenderId: "417781239555",
+            appId: "1:417781239555:web:39b8269b8a88f92b392336",
+            measurementId: "G-K19CJ2CQ13"
+        };
+
+        try {
+            const app = initializeApp(firebaseConfig);
+            const database = getDatabase(app);
+            
+            window.firebaseDB = database;
+            window.firebaseRef = ref;
+            window.firebaseSet = set;
+            window.firebaseGet = get;
+            window.firebaseOnValue = onValue;
+            window.firebasePush = push;
+            
+            log('✅ Firebase inicializado com sucesso!');
+            updateStatus('✅ Firebase conectado e funcionando!', 'success');
+            
+            // Listener em tempo real para escalas
+            const escalasRef = ref(database, 'data/ministerio_louvor_ibr_shared/schedules');
+            onValue(escalasRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    log(`🔄 Dados atualizados em tempo real: ${data.length} escalas`);
+                    mostrarEscalas(data);
+                } else {
+                    log('📭 Nenhuma escala encontrada no Firebase');
+                    mostrarEscalas([]);
+                }
+            });
+            
+        } catch (error) {
+            log(`❌ Erro ao inicializar Firebase: ${error.message}`);
+            updateStatus('❌ Erro na conexão com Firebase', 'error');
+        }
+
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logElement = document.getElementById('log');
+            logElement.textContent += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function updateStatus(message, type = 'info') {
+            const statusElement = document.getElementById('firebaseStatus');
+            statusElement.textContent = message;
+            statusElement.className = `status ${type}`;
+        }
+
+        function mostrarEscalas(escalas) {
+            const container = document.getElementById('escalasList');
+            if (!escalas || escalas.length === 0) {
+                container.innerHTML = '<p>📭 Nenhuma escala encontrada</p>';
+                return;
+            }
+
+            container.innerHTML = escalas.map(escala => `
+                <div class="escala-item">
+                    <strong>📅 ${escala.date}</strong><br>
+                    🎤 Ministro: ${escala.roles?.ministro || 'Não definido'}<br>
+                    🎸 Violão: ${escala.roles?.violao || 'Não definido'}<br>
+                    🎹 Teclado: ${escala.roles?.teclado || 'Não definido'}<br>
+                    🥁 Bateria: ${escala.roles?.bateria || 'Não definido'}
+                </div>
+            `).join('');
+        }
+
+        // Funções globais para os botões
+        window.testarConexao = async function() {
+            if (!window.firebaseDB) {
+                log('❌ Firebase não está disponível');
+                return;
+            }
+            
+            try {
+                log('🔍 Testando conexão...');
+                const testRef = window.firebaseRef(window.firebaseDB, 'test/connection');
+                await window.firebaseSet(testRef, {
+                    timestamp: new Date().toISOString(),
+                    message: 'Teste de conexão'
+                });
+                log('✅ Teste de escrita bem-sucedido!');
+                
+                const snapshot = await window.firebaseGet(testRef);
+                const data = snapshot.val();
+                log(`✅ Teste de leitura bem-sucedido: ${JSON.stringify(data)}`);
+                
+            } catch (error) {
+                log(`❌ Erro no teste: ${error.message}`);
+            }
+        };
+
+        window.criarEscalaTeste = async function() {
+            if (!window.firebaseDB) {
+                log('❌ Firebase não está disponível');
+                return;
+            }
+            
+            try {
+                log('➕ Criando escala de teste...');
+                
+                // Carregar escalas atuais
+                const escalasRef = window.firebaseRef(window.firebaseDB, 'data/ministerio_louvor_ibr_shared/schedules');
+                const snapshot = await window.firebaseGet(escalasRef);
+                const escalasAtuais = snapshot.val() || [];
+                
+                // Criar nova escala
+                const novaEscala = {
+                    id: Date.now(),
+                    date: new Date().toLocaleDateString('pt-BR'),
+                    status: 'published',
+                    roles: {
+                        ministro: 'João Teste',
+                        violao: 'Pedro Teste',
+                        teclado: 'Maria Teste',
+                        bateria: 'Paulo Teste',
+                        back_vocal: ['Ana Teste', 'José Teste']
+                    }
+                };
+                
+                // Adicionar à lista
+                escalasAtuais.push(novaEscala);
+                
+                // Salvar no Firebase
+                await window.firebaseSet(escalasRef, escalasAtuais);
+                log(`✅ Escala teste criada com sucesso! ID: ${novaEscala.id}`);
+                
+            } catch (error) {
+                log(`❌ Erro ao criar escala: ${error.message}`);
+            }
+        };
+
+        window.carregarEscalas = async function() {
+            if (!window.firebaseDB) {
+                log('❌ Firebase não está disponível');
+                return;
+            }
+            
+            try {
+                log('📥 Carregando escalas...');
+                const escalasRef = window.firebaseRef(window.firebaseDB, 'data/ministerio_louvor_ibr_shared/schedules');
+                const snapshot = await window.firebaseGet(escalasRef);
+                const escalas = snapshot.val();
+                
+                if (escalas) {
+                    log(`✅ ${escalas.length} escalas carregadas`);
+                    mostrarEscalas(escalas);
+                } else {
+                    log('📭 Nenhuma escala encontrada');
+                    mostrarEscalas([]);
+                }
+                
+            } catch (error) {
+                log(`❌ Erro ao carregar escalas: ${error.message}`);
+            }
+        };
+
+        window.limparDados = async function() {
+            if (!confirm('⚠️ Tem certeza que deseja limpar TODOS os dados?')) {
+                return;
+            }
+            
+            if (!window.firebaseDB) {
+                log('❌ Firebase não está disponível');
+                return;
+            }
+            
+            try {
+                log('🗑️ Limpando dados...');
+                const escalasRef = window.firebaseRef(window.firebaseDB, 'data/ministerio_louvor_ibr_shared/schedules');
+                await window.firebaseSet(escalasRef, []);
+                log('✅ Dados limpos com sucesso!');
+                mostrarEscalas([]);
+                
+            } catch (error) {
+                log(`❌ Erro ao limpar dados: ${error.message}`);
+            }
+        };
+
+        window.limparLog = function() {
+            document.getElementById('log').textContent = '';
+            log('🧹 Log limpo');
+        };
+    </script>
+</body>
+</html> 

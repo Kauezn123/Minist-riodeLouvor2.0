@@ -462,49 +462,7 @@
                 </div>
 
                 <div class="members-grid">
-                    <div class="member-card">
-                        <div class="member-avatar">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div class="member-info">
-                            <h3>Ana Santos</h3>
-                            <p class="member-role">Vocal Principal</p>
-                            <div class="member-instruments">
-                                <span class="instrument">Vocal</span>
-                                <span class="instrument">Violão</span>
-                            </div>
-                        </div>
-                        <div class="member-status active">Ativo</div>
-                    </div>
-
-                    <div class="member-card">
-                        <div class="member-avatar">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div class="member-info">
-                            <h3>João Silva</h3>
-                            <p class="member-role">Back Vocal</p>
-                            <div class="member-instruments">
-                                <span class="instrument">Vocal</span>
-                            </div>
-                        </div>
-                        <div class="member-status active">Ativo</div>
-                    </div>
-
-                    <div class="member-card">
-                        <div class="member-avatar">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div class="member-info">
-                            <h3>Pedro Costa</h3>
-                            <p class="member-role">Instrumentista</p>
-                            <div class="member-instruments">
-                                <span class="instrument">Violão</span>
-                                <span class="instrument">Baixo</span>
-                            </div>
-                        </div>
-                        <div class="member-status active">Ativo</div>
-                    </div>
+                    <!-- Os membros serão carregados dinamicamente via JavaScript -->
                 </div>
             </section>
 
@@ -710,8 +668,13 @@
                 <input type="hidden" id="scheduleId" name="scheduleId">
                 
                 <div class="form-group">
-                    <label>Data do Culto (ex: DOMINGO - 15/12)</label>
-                    <input type="text" name="date" id="scheduleDate" placeholder="DOMINGO - 15/12" required>
+                    <label>Data do Culto</label>
+                    <input type="date" name="dateInput" id="scheduleDateInput" required>
+                    <input type="hidden" name="date" id="scheduleDate">
+                    <div class="date-preview" id="datePreview">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Selecione uma data acima</span>
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -760,6 +723,13 @@
                 <div class="form-group">
                     <label>Baixo</label>
                     <select name="baixo" id="baixoSelect">
+                        <option value="">Selecione...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Projetor</label>
+                    <select name="projetor" id="projetorSelect">
                         <option value="">Selecione...</option>
                     </select>
                 </div>
