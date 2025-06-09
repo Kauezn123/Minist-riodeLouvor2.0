@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔐 Teste Sessão Persistente - FEEDS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .status-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status-card h3 {
+            color: #FFD700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .session-info {
+            font-family: monospace;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn.danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .btn.danger:hover {
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 1.5rem;
+            border-left: 4px solid #10b981;
+        }
+
+        .feature-card h4 {
+            color: #60a5fa;
+            margin-bottom: 0.5rem;
+        }
+
+        .logs {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        .log-entry {
+            margin-bottom: 0.5rem;
+            padding: 0.25rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .log-time {
+            color: #60a5fa;
+        }
+
+        .log-success { color: #4ade80; }
+        .log-error { color: #f87171; }
+        .log-warning { color: #fbbf24; }
+        .log-info { color: #a3a3a3; }
+
+        .test-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Sistema de Sessão Persistente</h1>
+            <p>Teste e demonstração do sistema de persistência de login do FEEDS</p>
+        </div>
+
+        <div class="status-grid">
+            <div class="status-card">
+                <h3><i class="fas fa-user-shield"></i> Status da Sessão</h3>
+                <div id="sessionStatus">Verificando...</div>
+                <div class="session-info" id="sessionInfo">
+                    Carregando dados da sessão...
+                </div>
+            </div>
+
+            <div class="status-card">
+                <h3><i class="fas fa-clock"></i> Informações de Tempo</h3>
+                <div id="timeInfo">Calculando...</div>
+            </div>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <h4>🔒 Segurança</h4>
+                <ul>
+                    <li>Sessão expira em 7 dias</li>
+                    <li>Inatividade máxima: 24h</li>
+                    <li>ID único por sessão</li>
+                    <li>Dados do browser salvos</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <h4>⚡ Performance</h4>
+                <ul>
+                    <li>Verificação a cada 5 min</li>
+                    <li>Atualização automática</li>
+                    <li>Logout automático</li>
+                    <li>Compatibilidade total</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <h4>📱 Persistência</h4>
+                <ul>
+                    <li>Funciona offline</li>
+                    <li>Resistente a fechamento</li>
+                    <li>Multi-dispositivo</li>
+                    <li>GitHub Pages compatible</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <h4>🛠️ Recursos</h4>
+                <ul>
+                    <li>localStorage robusto</li>
+                    <li>Logs detalhados</li>
+                    <li>Extensão automática</li>
+                    <li>Fallback de segurança</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="test-actions">
+            <button class="btn" onclick="openFeedsSystem()">
+                <i class="fas fa-play"></i> Abrir Sistema FEEDS
+            </button>
+            <button class="btn" onclick="simulateLogin()">
+                <i class="fas fa-sign-in-alt"></i> Simular Login
+            </button>
+            <button class="btn" onclick="updateActivity()">
+                <i class="fas fa-activity"></i> Atualizar Atividade
+            </button>
+            <button class="btn" onclick="extendSession()">
+                <i class="fas fa-plus-circle"></i> Estender Sessão
+            </button>
+            <button class="btn danger" onclick="clearSession()">
+                <i class="fas fa-trash"></i> Limpar Sessão
+            </button>
+        </div>
+
+        <div class="logs" id="logs">
+            <strong>📋 Logs do Sistema:</strong>
+            <div id="logEntries"></div>
+        </div>
+    </div>
+
+    <script>
+        let logCount = 0;
+
+        function addLog(message, type = 'info') {
+            const logsContainer = document.getElementById('logEntries');
+            const time = new Date().toLocaleTimeString('pt-BR');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerHTML = `
+                <span class="log-time">[${time}]</span> 
+                <span class="log-${type}">${message}</span>
+            `;
+            logsContainer.appendChild(entry);
+            
+            // Manter apenas os últimos 20 logs
+            if (logsContainer.children.length > 20) {
+                logsContainer.removeChild(logsContainer.firstChild);
+            }
+            
+            // Scroll para o final
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+        }
+
+        function checkSession() {
+            addLog('🔍 Verificando sessão...', 'info');
+            
+            try {
+                const sessionData = localStorage.getItem('feedsUserSession');
+                const userData = localStorage.getItem('feedsUser');
+                
+                const statusDiv = document.getElementById('sessionStatus');
+                const infoDiv = document.getElementById('sessionInfo');
+                const timeDiv = document.getElementById('timeInfo');
+                
+                if (!sessionData || !userData) {
+                    statusDiv.innerHTML = '<span style="color: #f87171;">❌ Nenhuma sessão ativa</span>';
+                    infoDiv.textContent = 'Faça login no sistema FEEDS para criar uma sessão.';
+                    timeDiv.innerHTML = '<span style="color: #a3a3a3;">Sem dados de tempo</span>';
+                    addLog('❌ Nenhuma sessão encontrada', 'warning');
+                    return;
+                }
+                
+                const session = JSON.parse(sessionData);
+                const user = JSON.parse(userData);
+                const now = Date.now();
+                
+                // Verificar expiração
+                const timeToExpire = session.expiresAt - now;
+                const isExpired = timeToExpire <= 0;
+                
+                // Verificar inatividade
+                const timeSinceActivity = now - session.lastActivity;
+                const isInactive = timeSinceActivity > (24 * 60 * 60 * 1000);
+                
+                if (isExpired || isInactive) {
+                    statusDiv.innerHTML = '<span style="color: #f87171;">⏰ Sessão expirada</span>';
+                    addLog('⏰ Sessão expirada detectada', 'error');
+                } else {
+                    statusDiv.innerHTML = '<span style="color: #4ade80;">✅ Sessão ativa</span>';
+                    addLog(`✅ Sessão válida para ${user.name}`, 'success');
+                }
+                
+                // Atualizar informações detalhadas
+                infoDiv.innerHTML = `
+                    <strong>Usuário:</strong> ${user.name}<br>
+                    <strong>Função:</strong> ${user.role}<br>
+                    <strong>Session ID:</strong> ${session.sessionId}<br>
+                    <strong>Login:</strong> ${new Date(session.loginTime).toLocaleString('pt-BR')}<br>
+                    <strong>Última atividade:</strong> ${new Date(session.lastActivity).toLocaleString('pt-BR')}<br>
+                    <strong>Expira em:</strong> ${new Date(session.expiresAt).toLocaleString('pt-BR')}
+                `;
+                
+                // Atualizar tempo
+                const daysToExpire = Math.floor(timeToExpire / (24 * 60 * 60 * 1000));
+                const hoursToExpire = Math.floor((timeToExpire % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+                const minutesSinceActivity = Math.floor(timeSinceActivity / (60 * 1000));
+                
+                timeDiv.innerHTML = `
+                    <strong>Tempo restante:</strong> ${daysToExpire}d ${hoursToExpire}h<br>
+                    <strong>Inativo há:</strong> ${minutesSinceActivity} minutos<br>
+                    <strong>Status:</strong> ${isExpired ? 'Expirada' : isInactive ? 'Inativa' : 'Ativa'}
+                `;
+                
+            } catch (error) {
+                addLog(`❌ Erro ao verificar sessão: ${error.message}`, 'error');
+                document.getElementById('sessionStatus').innerHTML = '<span style="color: #f87171;">❌ Erro na verificação</span>';
+            }
+        }
+
+        function openFeedsSystem() {
+            addLog('🚀 Abrindo sistema FEEDS...', 'info');
+            window.open('index.html', '_blank');
+        }
+
+        function simulateLogin() {
+            addLog('🔑 Simulando login de teste...', 'info');
+            
+            const testUser = {
+                id: 1,
+                name: "Teste Usuário",
+                username: "admin",
+                role: "Pastor",
+                level: "admin"
+            };
+            
+            const sessionData = {
+                user: testUser,
+                loginTime: Date.now(),
+                lastActivity: Date.now(),
+                sessionId: 'feeds_' + Date.now() + '_test',
+                browserInfo: {
+                    userAgent: navigator.userAgent,
+                    language: navigator.language,
+                    platform: navigator.platform
+                },
+                expiresAt: Date.now() + (7 * 24 * 60 * 60 * 1000)
+            };
+            
+            localStorage.setItem('feedsUserSession', JSON.stringify(sessionData));
+            localStorage.setItem('feedsUser', JSON.stringify(testUser));
+            
+            addLog('✅ Sessão de teste criada com sucesso!', 'success');
+            checkSession();
+        }
+
+        function updateActivity() {
+            try {
+                const sessionData = localStorage.getItem('feedsUserSession');
+                if (sessionData) {
+                    const session = JSON.parse(sessionData);
+                    session.lastActivity = Date.now();
+                    localStorage.setItem('feedsUserSession', JSON.stringify(session));
+                    addLog('🔄 Atividade da sessão atualizada', 'success');
+                    checkSession();
+                } else {
+                    addLog('❌ Nenhuma sessão para atualizar', 'warning');
+                }
+            } catch (error) {
+                addLog(`❌ Erro ao atualizar atividade: ${error.message}`, 'error');
+            }
+        }
+
+        function extendSession() {
+            try {
+                const sessionData = localStorage.getItem('feedsUserSession');
+                if (sessionData) {
+                    const session = JSON.parse(sessionData);
+                    session.expiresAt = Date.now() + (7 * 24 * 60 * 60 * 1000);
+                    session.lastActivity = Date.now();
+                    localStorage.setItem('feedsUserSession', JSON.stringify(session));
+                    addLog('⏰ Sessão estendida por mais 7 dias', 'success');
+                    checkSession();
+                } else {
+                    addLog('❌ Nenhuma sessão para estender', 'warning');
+                }
+            } catch (error) {
+                addLog(`❌ Erro ao estender sessão: ${error.message}`, 'error');
+            }
+        }
+
+        function clearSession() {
+            try {
+                localStorage.removeItem('feedsUserSession');
+                localStorage.removeItem('feedsUser');
+                addLog('🗑️ Sessão limpa com sucesso', 'success');
+                checkSession();
+            } catch (error) {
+                addLog(`❌ Erro ao limpar sessão: ${error.message}`, 'error');
+            }
+        }
+
+        // Verificar sessão ao carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            addLog('🚀 Sistema de teste de sessão iniciado', 'info');
+            checkSession();
+            
+            // Atualizar a cada 30 segundos
+            setInterval(checkSession, 30000);
+        });
+
+        // Log da informação do browser
+        addLog(`🌐 Browser: ${navigator.userAgent.split(') ')[0]})`, 'info');
+        addLog(`📍 Plataforma: ${navigator.platform}`, 'info');
+        addLog(`🗣️ Idioma: ${navigator.language}`, 'info');
+    </script>
+</body>
+</html> 

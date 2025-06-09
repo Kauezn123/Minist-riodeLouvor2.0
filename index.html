@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ministério de Louvor - Sistema de Gestão Musical</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563EB">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Ministério de Louvor">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-container">
+            <div class="login-header">
+                <div class="logo">
+                    <img src="logo.png" alt="Logo do Ministério" class="logo-image">
+                </div>
+                <h1>Ministério de Louvor</h1>
+                <p class="subtitle">Sistema de Gestão Musical</p>
+                <p class="location">Organização e Escalas de Louvor</p>
+            </div>
+            
+            <form class="login-form" id="loginForm">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="username" placeholder="Usuário" required>
+                </div>
+                
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" placeholder="Senha" required>
+                    <i class="fas fa-eye toggle-password" onclick="togglePassword()"></i>
+                </div>
+                
+                <button type="submit" class="login-btn">
+                    <span>Entrar</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+                
+                <button type="button" class="forgot-password-btn" onclick="forgotPassword()">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Esqueci minha senha</span>
+                </button>
+            </form>
+            
+            <!-- Versículo bíblico -->
+            <div class="bible-verse">
+                <div class="verse-content">
+                    <p id="verseText"></p>
+                    <span id="verseReference"></span>
+                </div>
+            </div>
+            
+            <div class="login-footer">
+                <p>Acesso restrito aos membros e líderes do ministério</p>
+            </div>
+        </div>
+        
+        <div class="background-animation">
+            <div class="wave wave1"></div>
+            <div class="wave wave2"></div>
+            <div class="wave wave3"></div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="dashboard hidden">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <img src="logo.png" alt="Logo" class="header-logo">
+                    <span>Ministério de Louvor</span>
+                </div>
+                
+                <nav class="nav-menu">
+                    <a href="#" class="nav-item active" data-section="home">
+                        <i class="fas fa-home"></i>
+                        <span>Início</span>
+                    </a>
+                    <a href="#" class="nav-item" data-section="schedule">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Escalas</span>
+                    </a>
+                    <a href="#" class="nav-item" data-section="members">
+                        <i class="fas fa-users"></i>
+                        <span>Membros</span>
+                    </a>
+                    <a href="#" class="nav-item" data-section="songs">
+                        <i class="fas fa-music"></i>
+                        <span>Repertório</span>
+                    </a>
+                </nav>
+                
+                <div class="user-menu">
+                    <div class="user-info">
+                        <span class="user-name" id="userName">Usuário</span>
+                        <span class="user-role">Membro</span>
+                    </div>
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <button class="logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Home Section -->
+            <section id="homeSection" class="content-section active">
+                <div class="welcome-banner">
+                    <div class="banner-content">
+                        <h2>Bem-vindo ao Ministério de Louvor</h2>
+                        <p>Sistema de Gestão Musical e Escalas</p>
+                        <div class="current-time">
+                            <i class="fas fa-clock"></i>
+                            <span id="currentDateTime"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <!-- Stats Cards -->
+                    <div class="stats-section">
+                        <h3>Estatísticas do Ministério</h3>
+                        <div class="stats-grid">
+                            <div class="stat-card primary">
+                                <div class="stat-icon">
+                                    <i class="fas fa-calendar-week"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h4>Próxima Escala</h4>
+                                    <p id="nextSchedule">Carregando...</p>
+                                    <span class="stat-detail live-data">Dados em tempo real</span>
+                                </div>
+                            </div>
+                            <div class="stat-card success">
+                                <div class="stat-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h4>Membros Ativos</h4>
+                                    <p id="activeMembersCount">Carregando...</p>
+                                    <span class="stat-detail live-data">Contagem automática</span>
+                                </div>
+                            </div>
+                            <div class="stat-card warning">
+                                <div class="stat-icon">
+                                    <i class="fab fa-youtube"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h4>Repertório Musical</h4>
+                                    <p id="songsCount">Carregando...</p>
+                                    <span class="stat-detail live-data">YouTube integrado</span>
+                                </div>
+                            </div>
+                            <div class="stat-card info">
+                                <div class="stat-icon">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h4>Próximo Evento</h4>
+                                    <p id="nextEvent">Carregando...</p>
+                                    <span class="stat-detail live-data">Google Calendar</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions-section">
+                        <h3>Ações Rápidas</h3>
+                        <div class="quick-actions-grid">
+                            <button class="quick-action-btn" onclick="navigateToSection('schedule')">
+                                <i class="fas fa-plus-circle"></i>
+                                <span>Nova Escala</span>
+                            </button>
+                            <button class="quick-action-btn" onclick="navigateToSection('members')">
+                                <i class="fas fa-user-plus"></i>
+                                <span>Adicionar Membro</span>
+                            </button>
+                            <button class="quick-action-btn" onclick="navigateToSection('songs')">
+                                <i class="fas fa-search"></i>
+                                <span>Buscar Música</span>
+                            </button>
+                            <button class="quick-action-btn" onclick="showUpcomingEvents()">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>Ver Agenda</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="recent-activity">
+                        <div class="section-header-small">
+                            <h3>Atividades Recentes</h3>
+                            <button class="btn-link" onclick="showAllActivities()">Ver todas</button>
+                        </div>
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                <div class="activity-icon success">
+                                    <i class="fas fa-calendar-plus"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h4>Nova escala publicada</h4>
+                                    <p>Escala para o domingo, 15/12/2024</p>
+                                    <span class="activity-time">Há 2 horas</span>
+                                </div>
+                                <div class="activity-status">
+                                    <span class="status-badge published">Publicada</span>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-item">
+                                <div class="activity-icon info">
+                                    <i class="fas fa-user-plus"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h4>Novo membro adicionado</h4>
+                                    <p>Maria Silva foi adicionada ao ministério</p>
+                                    <span class="activity-time">Ontem</span>
+                                </div>
+                                <div class="activity-status">
+                                    <span class="status-badge new">Novo</span>
+                                </div>
+                            </div>
+
+                            <div class="activity-item">
+                                <div class="activity-icon warning">
+                                    <i class="fas fa-music"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h4>Música adicionada ao repertório</h4>
+                                    <p>"Bondade de Deus" - Isaías Saad</p>
+                                    <span class="activity-time">2 dias atrás</span>
+                                </div>
+                                <div class="activity-status">
+                                    <span class="status-badge music">Repertório</span>
+                                </div>
+                            </div>
+
+                            <div class="activity-item">
+                                <div class="activity-icon primary">
+                                    <i class="fas fa-edit"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h4>Escala atualizada</h4>
+                                    <p>Alterações na escala de 08/12/2024</p>
+                                    <span class="activity-time">3 dias atrás</span>
+                                </div>
+                                <div class="activity-status">
+                                    <span class="status-badge updated">Atualizada</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Events -->
+                    <div class="upcoming-events">
+                        <div class="events-header">
+                            <h3>Próximos Eventos</h3>
+                            <button class="btn-add-event" onclick="openEventModal()" style="display: none;">
+                                <i class="fas fa-plus"></i>
+                                Adicionar Evento
+                            </button>
+                        </div>
+                        <div class="events-list" id="eventsList">
+                            <!-- Eventos serão carregados dinamicamente -->
+                            <div class="no-events-message" id="noEventsMessage">
+                                <div class="no-events-icon">
+                                    <i class="fas fa-calendar-plus"></i>
+                                </div>
+                                <h4>Nenhum evento programado</h4>
+                                <p>Os próximos eventos do ministério aparecerão aqui quando forem criados.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ministry Tips -->
+                    <div class="ministry-tips">
+                        <h3>Dicas do Ministério</h3>
+                        <div class="tips-carousel">
+                            <div class="tip-card active">
+                                <div class="tip-icon">
+                                    <i class="fas fa-lightbulb"></i>
+                                </div>
+                                <div class="tip-content">
+                                    <h4>Preparação Musical</h4>
+                                    <p>Sempre ensaie as músicas antes do culto. Use o sistema de cifras integrado para estudar os acordes.</p>
+                                </div>
+                            </div>
+                            <div class="tip-card">
+                                <div class="tip-icon">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                                <div class="tip-content">
+                                    <h4>Ministração</h4>
+                                    <p>Lembre-se: não estamos apenas tocando música, estamos ministrando adoração ao Senhor.</p>
+                                </div>
+                            </div>
+                            <div class="tip-card">
+                                <div class="tip-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="tip-content">
+                                    <h4>Trabalho em Equipe</h4>
+                                    <p>A harmonia musical começa com a harmonia entre os membros da equipe.</p>
+                                </div>
+                            </div>
+                            <div class="tip-card">
+                                <div class="tip-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="tip-content">
+                                    <h4>Pontualidade</h4>
+                                    <p>Chegue sempre 30 minutos antes do culto para afinação e preparação espiritual.</p>
+                                </div>
+                            </div>
+                            <div class="tip-card">
+                                <div class="tip-icon">
+                                    <i class="fas fa-praying-hands"></i>
+                                </div>
+                                <div class="tip-content">
+                                    <h4>Oração</h4>
+                                    <p>Ore antes, durante e depois da ministração. A oração é a base de tudo.</p>
+                                </div>
+                            </div>
+                            <div class="tip-card">
+                                <div class="tip-icon">
+                                    <i class="fas fa-volume-up"></i>
+                                </div>
+                                <div class="tip-content">
+                                    <h4>Som e Áudio</h4>
+                                    <p>Teste sempre o equipamento antes do culto. Um bom som faz toda a diferença.</p>
+                                </div>
+                            </div>
+                            <div class="tip-card">
+                                <div class="tip-icon">
+                                    <i class="fas fa-book-open"></i>
+                                </div>
+                                <div class="tip-content">
+                                    <h4>Estudo Bíblico</h4>
+                                    <p>Conheça o contexto das músicas e versículos. Isso enriquece a ministração.</p>
+                                </div>
+                            </div>
+                            <div class="tip-card">
+                                <div class="tip-icon">
+                                    <i class="fas fa-microphone"></i>
+                                </div>
+                                <div class="tip-content">
+                                    <h4>Técnica Vocal</h4>
+                                    <p>Pratique exercícios vocais e cuide da sua voz. Ela é seu instrumento principal.</p>
+                                </div>
+                            </div>
+                            <div class="tip-card">
+                                <div class="tip-icon">
+                                    <i class="fas fa-guitar"></i>
+                                </div>
+                                <div class="tip-content">
+                                    <h4>Instrumentos</h4>
+                                    <p>Mantenha seus instrumentos sempre afinados e em bom estado de conservação.</p>
+                                </div>
+                            </div>
+                            <div class="tip-card">
+                                <div class="tip-icon">
+                                    <i class="fas fa-eye"></i>
+                                </div>
+                                <div class="tip-content">
+                                    <h4>Comunicação Visual</h4>
+                                    <p>Mantenha contato visual com a congregação e com os outros músicos durante a ministração.</p>
+                                </div>
+                            </div>
+                            <div class="tip-card">
+                                <div class="tip-icon">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="tip-content">
+                                    <h4>Humildade</h4>
+                                    <p>Lembre-se: somos servos. O protagonista é Jesus, não nós.</p>
+                                </div>
+                            </div>
+                            <div class="tip-card">
+                                <div class="tip-icon">
+                                    <i class="fas fa-hands-helping"></i>
+                                </div>
+                                <div class="tip-content">
+                                    <h4>Servir</h4>
+                                    <p>Esteja sempre disposto a ajudar outros membros e servir onde for necessário.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tip-navigation">
+                            <button class="tip-nav-btn" onclick="previousTip()">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <div class="tip-indicators">
+                                <span class="indicator active"></span>
+                                <span class="indicator"></span>
+                                <span class="indicator"></span>
+                                <span class="indicator"></span>
+                                <span class="indicator"></span>
+                                <span class="indicator"></span>
+                                <span class="indicator"></span>
+                                <span class="indicator"></span>
+                                <span class="indicator"></span>
+                                <span class="indicator"></span>
+                                <span class="indicator"></span>
+                                <span class="indicator"></span>
+                            </div>
+                            <button class="tip-nav-btn" onclick="nextTip()">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Schedule Section -->
+            <section id="scheduleSection" class="content-section">
+                <div class="section-header">
+                    <h2>Escalas do Ministério</h2>
+                    <div class="schedule-controls">
+                        <select id="monthFilter" class="month-selector">
+                            <option value="">Todos os meses</option>
+                        </select>
+                        <button class="btn-primary" onclick="openScheduleModal()">
+                            <i class="fas fa-plus"></i>
+                            Nova Escala
+                        </button>
+                    </div>
+                </div>
+
+                <div class="schedules-container">
+                    <div class="schedules-list" id="schedulesList">
+                        <!-- Escalas serão carregadas dinamicamente -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Members Section -->
+            <section id="membersSection" class="content-section">
+                <div class="section-header">
+                    <h2>Membros do Ministério</h2>
+                    <button class="btn-primary" onclick="openMemberModal()">
+                        <i class="fas fa-user-plus"></i>
+                        Adicionar Membro
+                    </button>
+                </div>
+
+                <div class="members-grid">
+                    <div class="member-card">
+                        <div class="member-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="member-info">
+                            <h3>Ana Santos</h3>
+                            <p class="member-role">Vocal Principal</p>
+                            <div class="member-instruments">
+                                <span class="instrument">Vocal</span>
+                                <span class="instrument">Violão</span>
+                            </div>
+                        </div>
+                        <div class="member-status active">Ativo</div>
+                    </div>
+
+                    <div class="member-card">
+                        <div class="member-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="member-info">
+                            <h3>João Silva</h3>
+                            <p class="member-role">Back Vocal</p>
+                            <div class="member-instruments">
+                                <span class="instrument">Vocal</span>
+                            </div>
+                        </div>
+                        <div class="member-status active">Ativo</div>
+                    </div>
+
+                    <div class="member-card">
+                        <div class="member-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="member-info">
+                            <h3>Pedro Costa</h3>
+                            <p class="member-role">Instrumentista</p>
+                            <div class="member-instruments">
+                                <span class="instrument">Violão</span>
+                                <span class="instrument">Baixo</span>
+                            </div>
+                        </div>
+                        <div class="member-status active">Ativo</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Songs Section -->
+            <section id="songsSection" class="content-section">
+                <div class="section-header">
+                    <h2>Repertório Musical</h2>
+                    <div class="repertorio-controls">
+                        <button class="btn-secondary" onclick="showPlaylistView()">
+                            <i class="fas fa-list"></i>
+                            Ver Playlists
+                        </button>
+                        <button class="btn-primary" onclick="showSearchView()">
+                            <i class="fas fa-search"></i>
+                            Buscar Músicas
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Explicação sobre Repertório -->
+                <div class="repertorio-info" id="repertorioInfo">
+                    <div class="info-card-modern">
+                        <div class="card-header">
+                            <div class="info-icon-modern">
+                                <i class="fas fa-music"></i>
+                            </div>
+                            <div class="header-content">
+                                <h4>O que é Repertório Musical?</h4>
+                                <div class="info-badge-modern">
+                                    <i class="fas fa-star"></i>
+                                    <span>ESSENCIAL</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-description">O repertório é o conjunto de músicas que uma banda gospel conhece e está preparada para tocar. É fundamental para o ministério de louvor!</p>
+                            <div class="benefits-grid">
+                                <div class="benefit-item">
+                                    <div class="benefit-icon">
+                                        <i class="fas fa-folder-open"></i>
+                                    </div>
+                                    <div class="benefit-content">
+                                        <h5>Organização</h5>
+                                        <p>Manter todas as músicas catalogadas e acessíveis</p>
+                                    </div>
+                                </div>
+                                <div class="benefit-item">
+                                    <div class="benefit-icon">
+                                        <i class="fas fa-graduation-cap"></i>
+                                    </div>
+                                    <div class="benefit-content">
+                                        <h5>Preparação</h5>
+                                        <p>Estudar e ensaiar as músicas antes dos cultos</p>
+                                    </div>
+                                </div>
+                                <div class="benefit-item">
+                                    <div class="benefit-icon">
+                                        <i class="fas fa-palette"></i>
+                                    </div>
+                                    <div class="benefit-content">
+                                        <h5>Variedade</h5>
+                                        <p>Ter opções diversas para diferentes momentos</p>
+                                    </div>
+                                </div>
+                                <div class="benefit-item">
+                                    <div class="benefit-icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div class="benefit-content">
+                                        <h5>Compartilhamento</h5>
+                                        <p>Todos os membros conhecem as músicas</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Playlists View -->
+                <div id="playlistsView" class="playlists-container">
+                    <h3>Playlists dos Membros</h3>
+                    <div class="playlists-grid" id="playlistsGrid">
+                        <!-- Playlists serão carregadas dinamicamente -->
+                    </div>
+                </div>
+
+                <!-- Search View -->
+                <div id="searchView" class="search-container hidden">
+                    <div class="youtube-info" id="youtubeInfo">
+                        <div class="youtube-card-modern">
+                            <div class="youtube-header">
+                                <div class="youtube-icon-container">
+                                    <i class="fab fa-youtube"></i>
+                                    <div class="youtube-pulse"></div>
+                                </div>
+                                <div class="youtube-header-content">
+                                    <h4>Integração com YouTube</h4>
+                                    <div class="youtube-badge">
+                                        <i class="fas fa-bolt"></i>
+                                        <span>NOVO!</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="youtube-body">
+                                <p class="youtube-description">Pesquise músicas diretamente do <strong>YouTube</strong> e adicione à sua playlist pessoal. Acesso a milhões de louvores!</p>
+                                <div class="youtube-features">
+                                    <div class="feature-tag">
+                                        <i class="fas fa-search"></i>
+                                        <span>Busca Real</span>
+                                    </div>
+                                    <div class="feature-tag">
+                                        <i class="fas fa-play"></i>
+                                        <span>Reprodução Direta</span>
+                                    </div>
+                                    <div class="feature-tag">
+                                        <i class="fas fa-list"></i>
+                                        <span>Playlists Pessoais</span>
+                                    </div>
+                                    <div class="feature-tag">
+                                        <i class="fas fa-globe-americas"></i>
+                                        <span>Catálogo Global</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="search-bar-modern">
+                        <div class="search-container-inner">
+                            <div class="search-icon-left">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <input type="text" placeholder="Digite o nome da música, artista ou álbum..." id="youtubeSearch" class="search-input-modern">
+                            <div class="search-suggestions">
+                                <span class="suggestion-text">Ex: Fernandinho, Gabriela Rocha, Diante do Trono</span>
+                            </div>
+                            <button class="btn-search-modern" onclick="searchYouTube()">
+                                <i class="fas fa-search"></i>
+                                <span>Buscar</span>
+                            </button>
+                        </div>
+                        <div class="search-shortcuts">
+                            <span class="shortcut-label">Buscas rápidas:</span>
+                            <button class="quick-search-btn" onclick="quickSearch('Fernandinho')">
+                                <i class="fas fa-music"></i>
+                                Fernandinho
+                            </button>
+                            <button class="quick-search-btn" onclick="quickSearch('Gabriela Rocha')">
+                                <i class="fas fa-microphone"></i>
+                                Gabriela Rocha
+                            </button>
+                            <button class="quick-search-btn" onclick="quickSearch('Diante do Trono')">
+                                <i class="fas fa-users"></i>
+                                Diante do Trono
+                            </button>
+                            <button class="quick-search-btn" onclick="quickSearch('Aline Barros')">
+                                <i class="fas fa-heart"></i>
+                                Aline Barros
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="search-results" id="searchResults">
+                        <!-- Resultados da busca aparecerão aqui -->
+                    </div>
+                </div>
+
+                <!-- Player de Música -->
+                <div id="musicPlayer" class="music-player hidden">
+                    <div class="player-info">
+                        <img id="playerThumbnail" src="" alt="Thumbnail">
+                        <div class="player-details">
+                            <h4 id="playerTitle">Título da Música</h4>
+                            <p id="playerChannel">Canal</p>
+                        </div>
+                    </div>
+                    <div class="player-controls">
+                        <button id="playPauseBtn" onclick="togglePlayPause()">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button onclick="stopMusic()">
+                            <i class="fas fa-stop"></i>
+                        </button>
+                        <button onclick="closePlayer()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Schedule Modal -->
+    <div id="scheduleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="scheduleModalTitle">Nova Escala</h3>
+                <button class="modal-close" onclick="closeScheduleModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form class="modal-form" id="scheduleForm">
+                <input type="hidden" id="scheduleId" name="scheduleId">
+                
+                <div class="form-group">
+                    <label>Data do Culto (ex: DOMINGO - 15/12)</label>
+                    <input type="text" name="date" id="scheduleDate" placeholder="DOMINGO - 15/12" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Ministro</label>
+                    <select name="ministro" id="vocalPrincipal" required>
+                        <option value="">Selecione o ministro...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Back Vocal</label>
+                    <div class="backvocal-selector" id="backVocalSelector">
+                        <!-- Checkboxes serão gerados dinamicamente -->
+                    </div>
+                    <input type="hidden" name="back_vocal" id="backVocalHidden">
+                </div>
+                
+                <div class="form-group">
+                    <label>Violão</label>
+                    <select name="violao" id="violaoSelect">
+                        <option value="">Selecione...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Guitarra</label>
+                    <select name="guitarra" id="guitarraSelect">
+                        <option value="">Selecione...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Teclado</label>
+                    <select name="teclado" id="tecladoSelect">
+                        <option value="">Selecione...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Bateria</label>
+                    <select name="bateria" id="bateriaSelect">
+                        <option value="">Selecione...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Baixo</label>
+                    <select name="baixo" id="baixoSelect">
+                        <option value="">Selecione...</option>
+                    </select>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeScheduleModal()">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-primary" id="saveScheduleBtn">
+                        Salvar Escala
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div id="confirmDeleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Confirmar Exclusão</h3>
+                <button class="modal-close" onclick="closeConfirmDeleteModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-form">
+                <div class="confirm-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Tem certeza que deseja excluir esta escala?</p>
+                    <p class="schedule-info" id="deleteScheduleInfo"></p>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeConfirmDeleteModal()">
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn-danger" onclick="confirmDeleteSchedule()">
+                        <i class="fas fa-trash"></i>
+                        Excluir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Modal -->
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="eventModalTitle">Adicionar Evento</h3>
+                <button class="modal-close" onclick="closeEventModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="eventForm" onsubmit="handleEventSubmit(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="eventTitle">Título do Evento *</label>
+                        <input type="text" id="eventTitle" name="title" required placeholder="Ex: Culto Dominical, Vigília, Apresentação Especial">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventDescription">Descrição</label>
+                        <input type="text" id="eventDescription" name="description" placeholder="Ex: Ministração de louvor - 19h">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventDate">Data *</label>
+                            <input type="date" id="eventDate" name="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventTime">Horário</label>
+                            <input type="time" id="eventTime" name="time" placeholder="19:00">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventType">Tipo de Evento</label>
+                        <select id="eventType" name="type">
+                            <option value="culto">Culto</option>
+                            <option value="ensaio">Ensaio</option>
+                            <option value="apresentacao">Apresentação Especial</option>
+                            <option value="vigilia">Vigília</option>
+                            <option value="conferencia">Conferência</option>
+                            <option value="outro">Outro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventTeam">Equipe Responsável</label>
+                        <select id="eventTeam" name="team" multiple>
+                            <!-- Membros serão carregados dinamicamente -->
+                        </select>
+                        <small>Segure Ctrl para selecionar múltiplos membros</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventStatus">Status</label>
+                        <select id="eventStatus" name="status">
+                            <option value="draft">Rascunho</option>
+                            <option value="pending">Pendente</option>
+                            <option value="ready">Pronto</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeEventModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar Evento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- All Activities Modal -->
+    <div id="allActivitiesModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>Todas as Atividades Recentes</h3>
+                <button class="modal-close" onclick="closeAllActivitiesModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="activities-filters">
+                    <div class="filter-group">
+                        <label for="activityTypeFilter">Filtrar por tipo:</label>
+                        <select id="activityTypeFilter" onchange="filterActivities()">
+                            <option value="">Todos os tipos</option>
+                            <option value="schedule">Escalas</option>
+                            <option value="member">Membros</option>
+                            <option value="song">Músicas</option>
+                            <option value="event">Eventos</option>
+                            <option value="system">Sistema</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="activityStatusFilter">Filtrar por status:</label>
+                        <select id="activityStatusFilter" onchange="filterActivities()">
+                            <option value="">Todos os status</option>
+                            <option value="success">Concluído</option>
+                            <option value="info">Novo</option>
+                            <option value="warning">Atenção</option>
+                            <option value="primary">Atualizado</option>
+                            <option value="danger">Removido</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <button class="btn-secondary" onclick="clearActivityFilters()">
+                            <i class="fas fa-filter"></i>
+                            Limpar Filtros
+                        </button>
+                    </div>
+                </div>
+                <div class="activities-list-container">
+                    <div id="allActivitiesList" class="all-activities-list">
+                        <!-- Atividades serão carregadas aqui -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" onclick="closeAllActivitiesModal()">
+                    Fechar
+                </button>
+                <button type="button" class="btn-primary" onclick="exportActivities()">
+                    <i class="fas fa-download"></i>
+                    Exportar Relatório
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import Firebase functions
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, set, get, onValue, off } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        // Configuração Firebase - Ministério de Louvor
+        const firebaseConfig = {
+            apiKey: "AIzaSyBYz-aJOWxvPD5BRzzPkS19FQEMfU3Ycm0",
+            authDomain: "ministeriodelouvor-46a34.firebaseapp.com",
+            databaseURL: "https://ministeriodelouvor-46a34-default-rtdb.firebaseio.com",
+            projectId: "ministeriodelouvor-46a34",
+            storageBucket: "ministeriodelouvor-46a34.firebasestorage.app",
+            messagingSenderId: "417781239555",
+            appId: "1:417781239555:web:39b8269b8a88f92b392336",
+            measurementId: "G-K19CJ2CQ13"
+        };
+
+        // Initialize Firebase
+        try {
+            const app = initializeApp(firebaseConfig);
+            const database = getDatabase(app);
+            
+            // Make Firebase functions available globally
+            window.firebaseDB = database;
+            window.firebaseRef = ref;
+            window.firebaseSet = set;
+            window.firebaseGet = get;
+            window.firebaseOnValue = onValue;
+            window.firebaseOff = off;
+            
+            console.log('🔥 Firebase inicializado com sucesso!');
+            
+            // Notify the main script that Firebase is ready
+            window.dispatchEvent(new CustomEvent('firebaseReady'));
+            
+        } catch (error) {
+            console.warn('⚠️ Erro ao inicializar Firebase:', error);
+            console.log('📴 Sistema funcionará offline apenas');
+        }
+    </script>
+
+    <script src="script.js"></script>
+</body>
+</html> 
