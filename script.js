@@ -4672,7 +4672,18 @@ function addToPlaylist(videoId, title, channel, thumbnail) {
     const song = { videoId, title, channel, thumbnail, addedAt: new Date().toISOString() };
     AppState.playlists[username].push(song);
     saveToLocalStorage();
-    loadPlaylists(); // Recarregar para atualizar contadores
+    
+    // Forçar sincronização imediata com Firebase
+    if (syncManager && syncManager.isInitialized) {
+        syncManager.syncPlaylists(AppState.playlists);
+        console.log('🔄 Playlist sincronizada após adicionar música');
+    }
+    
+    // Recarregar para atualizar contadores
+    setTimeout(() => {
+        loadPlaylists();
+    }, 100);
+    
     showSuccessMessage(`"${title}" adicionada à sua playlist`);
     // Registrar atividade
     addActivity('playlist', `Adicionou "${title}" ao repertório`, `${AppState.currentUser.name} adicionou "${title}" ao repertório`, 'success');
@@ -4711,6 +4722,13 @@ function removeFromPlaylist(videoId, playlistOwner = null) {
             AppState.playlists[username].splice(songIndex, 1);
             // Salvar no localStorage
             saveToLocalStorage();
+            
+            // Forçar sincronização imediata com Firebase
+            if (syncManager && syncManager.isInitialized) {
+                syncManager.syncPlaylists(AppState.playlists);
+                console.log('🔄 Playlist sincronizada após remover música');
+            }
+            
             // Mostrar notificação de sucesso personalizada
             showSuccessMessage(`🎵 "${songToRemove.title}" foi removida da sua playlist!`);
             // Registrar atividade detalhada
@@ -5964,10 +5982,22 @@ class FirebaseSyncManager {
                     localStorage.setItem('feedsPlaylists', JSON.stringify(serverData));
                     
                     // Atualizar interface sempre
-                    loadPlaylists();
-                    updateDashboardData(); // Atualizar dashboard também
+                    setTimeout(() => {
+                        loadPlaylists();
+                        updateDashboardData(); // Atualizar dashboard também
+                        
+                        // Se estiver na seção de repertório, forçar update visual
+                        if (AppState.currentSection === 'songs') {
+                            // Forçar refresh da página de repertório
+                            const playlistsGrid = document.getElementById('playlistsGrid');
+                            if (playlistsGrid) {
+                                loadPlaylists();
+                            }
+                        }
+                    }, 200);
                     
-                    showInfoMessage('🔄 Playlists atualizadas por outro membro da banda');
+                    // Log silencioso ao invés de notificação
+                    console.log('🔄 Playlists atualizadas por outro membro da banda');
                 }
             });
             
@@ -6003,7 +6033,8 @@ class FirebaseSyncManager {
                         updateDashboardData(); // Atualizar dashboard também
                     }, 100);
                     
-                    showInfoMessage('🔄 Escalas atualizadas por outro membro da banda');
+                    // Log silencioso ao invés de notificação
+                    console.log('🔄 Escalas atualizadas por outro membro da banda');
                         }
                     }
                 }
@@ -6022,7 +6053,8 @@ class FirebaseSyncManager {
                     // Atualizar interface se necessário
                     updateRecentActivities();
                     
-                    showInfoMessage('🔄 Atividades atualizadas por outro membro da banda');
+                    // Log silencioso ao invés de notificação
+                    console.log('🔄 Atividades atualizadas por outro membro da banda');
                 }
             });
             
@@ -6388,4 +6420,21 @@ window.debugState = function() {
     }
     
     showInfoMessage('🔍 Estado debugado - verifique o console');
+};
+
+// Função para forçar atualização das playlists (incluindo contadores)
+window.forcePlaylistUpdate = function() {
+    console.log('🎵 Forçando atualização das playlists...');
+    
+    if (AppState.currentSection === 'songs') {
+        loadPlaylists();
+        showInfoMessage('✅ Playlists atualizadas!');
+    } else {
+        console.log('ℹ️ Não está na seção de repertório');
+    }
+    
+    // Forçar sincronização também
+    if (syncManager && syncManager.isInitialized) {
+        syncManager.syncPlaylists(AppState.playlists);
+    }
 };
