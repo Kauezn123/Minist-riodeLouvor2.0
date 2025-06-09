@@ -1772,8 +1772,26 @@ function generateActivitiesCSV(activities) {
 }
 // === SISTEMA DE ATIVIDADES === //
 function addActivity(type, title, description, status = 'info') {
+    // Criar ID único baseado em timestamp mais dados únicos
+    const uniqueId = `${Date.now()}_${type}_${title}_${AppState.currentUser?.name || 'Sistema'}`;
+    
+    // Verificar se já existe uma atividade similar recente (últimos 5 segundos)
+    const recentThreshold = Date.now() - 5000; // 5 segundos
+    const isDuplicate = AppState.activities.some(activity => {
+        const activityTime = new Date(activity.timestamp).getTime();
+        return activityTime > recentThreshold && 
+               activity.type === type && 
+               activity.title === title && 
+               activity.description === description;
+    });
+    
+    if (isDuplicate) {
+        console.log('🚫 Atividade duplicada detectada e ignorada:', title);
+        return;
+    }
+    
     const activity = {
-        id: Date.now(),
+        id: uniqueId,
         type: type,
         title: title,
         description: description,
@@ -1782,18 +1800,24 @@ function addActivity(type, title, description, status = 'info') {
         timestamp: new Date().toISOString(),
         timeAgo: 'Agora mesmo'
     };
+    
     // Adicionar no início da lista
     AppState.activities.unshift(activity);
+    
     // Manter apenas as últimas 50 atividades
     if (AppState.activities.length > 50) {
         AppState.activities = AppState.activities.slice(0, 50);
     }
+    
     // Salvar no localStorage
     saveToLocalStorage();
+    
     // Atualizar interface se estivermos na seção home
     if (AppState.currentSection === 'home') {
         updateRecentActivities();
     }
+    
+    console.log('✅ Nova atividade adicionada:', title);
 }
 function updateRecentActivities() {
     const activityList = document.querySelector('.activity-list');
@@ -6046,15 +6070,44 @@ class FirebaseSyncManager {
             const activitiesRef = window.firebaseRef(this.database, `data/${this.userId}/activities`);
             const activitiesListener = window.firebaseOnValue(activitiesRef, (snapshot) => {
                 const serverData = snapshot.val();
-                if (serverData && JSON.stringify(serverData) !== JSON.stringify(AppState.activities)) {
-                    AppState.activities = serverData;
-                    localStorage.setItem('feedsActivities', JSON.stringify(serverData));
+                if (serverData && Array.isArray(serverData)) {
+                    // Verificar se há mudanças reais antes de atualizar
+                    const currentDataString = JSON.stringify(AppState.activities);
+                    const serverDataString = JSON.stringify(serverData);
                     
-                    // Atualizar interface se necessário
-                    updateRecentActivities();
-                    
-                    // Log silencioso ao invés de notificação
-                    console.log('🔄 Atividades atualizadas por outro membro da banda');
+                    if (serverDataString !== currentDataString) {
+                        // Mesclar atividades sem duplicar
+                        const mergedActivities = [...serverData];
+                        
+                        // Adicionar atividades locais que não estão no servidor
+                        AppState.activities.forEach(localActivity => {
+                            const existsInServer = mergedActivities.some(serverActivity => 
+                                serverActivity.id === localActivity.id ||
+                                (serverActivity.timestamp === localActivity.timestamp &&
+                                 serverActivity.type === localActivity.type &&
+                                 serverActivity.title === localActivity.title)
+                            );
+                            
+                            if (!existsInServer) {
+                                mergedActivities.unshift(localActivity);
+                            }
+                        });
+                        
+                        // Ordenar por timestamp (mais recente primeiro)
+                        mergedActivities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                        
+                        // Manter apenas as últimas 50
+                        const finalActivities = mergedActivities.slice(0, 50);
+                        
+                        AppState.activities = finalActivities;
+                        localStorage.setItem('feedsActivities', JSON.stringify(finalActivities));
+                        
+                        // Atualizar interface se necessário
+                        updateRecentActivities();
+                        
+                        // Log silencioso ao invés de notificação
+                        console.log('🔄 Atividades sincronizadas sem duplicação');
+                    }
                 }
             });
             
@@ -6254,6 +6307,30 @@ loadMockData = async function() {
                 } else {
                     AppState.activities = [];
                 }
+                
+                // Limpar atividades duplicadas ao carregar
+                if (AppState.activities.length > 0) {
+                    setTimeout(() => {
+                        console.log('🧹 Verificando atividades duplicadas...');
+                        const originalLength = AppState.activities.length;
+                        const cleaned = [];
+                        const seen = new Map();
+                        
+                        AppState.activities.forEach(activity => {
+                            const key = `${activity.type}_${activity.title}_${activity.description}_${activity.timestamp}`;
+                            if (!seen.has(key)) {
+                                seen.set(key, true);
+                                cleaned.push(activity);
+                            }
+                        });
+                        
+                        if (cleaned.length !== originalLength) {
+                            AppState.activities = cleaned;
+                            saveToLocalStorage();
+                            console.log(`✅ ${originalLength - cleaned.length} atividades duplicadas removidas automaticamente`);
+                        }
+                    }, 1000);
+                }
             } catch (error) {
                 console.error('Erro ao carregar dados complementares:', error);
             }
@@ -6292,6 +6369,34 @@ function showSyncStatus() {
     const statusMsg = `🔥 Firebase Status:\n• Online: ${status.online ? '✅' : '❌'}\n• Inicializado: ${status.initialized ? '✅' : '❌'}\n• User ID: ${status.userId}\n• Listeners ativos: ${status.listeners}`;
     
     showInfoMessage(statusMsg);
+}
+
+// Função para limpar atividades duplicadas existentes
+function cleanDuplicateActivities() {
+    const cleaned = [];
+    const seen = new Map();
+    
+    AppState.activities.forEach(activity => {
+        // Criar chave única baseada em conteúdo
+        const key = `${activity.type}_${activity.title}_${activity.description}_${activity.timestamp}`;
+        
+        if (!seen.has(key)) {
+            seen.set(key, true);
+            cleaned.push(activity);
+        } else {
+            console.log('🧹 Removendo atividade duplicada:', activity.title);
+        }
+    });
+    
+    if (cleaned.length !== AppState.activities.length) {
+        AppState.activities = cleaned;
+        saveToLocalStorage();
+        updateRecentActivities();
+        showSuccessMessage(`🧹 ${AppState.activities.length - cleaned.length} atividades duplicadas removidas!`);
+        console.log(`✅ Limpeza concluída: ${cleaned.length} atividades únicas mantidas`);
+    } else {
+        showInfoMessage('✅ Nenhuma atividade duplicada encontrada');
+    }
 }
 
 // Inicializar Firebase IMEDIATAMENTE quando disponível
@@ -6343,7 +6448,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Comandos globais para debug
 window.showFirebaseStatus = showSyncStatus;
+window.cleanDuplicateActivities = cleanDuplicateActivities;
 window.syncManager = () => syncManager;
+
+// Função para debug das atividades
+window.debugActivities = function() {
+    console.log('📊 Total de atividades:', AppState.activities.length);
+    console.log('📋 Últimas 10 atividades:', AppState.activities.slice(0, 10));
+    
+    // Verificar duplicatas potenciais
+    const grouped = {};
+    AppState.activities.forEach(activity => {
+        const key = `${activity.type}_${activity.title}`;
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push(activity);
+    });
+    
+    const duplicates = Object.entries(grouped).filter(([key, activities]) => activities.length > 1);
+    if (duplicates.length > 0) {
+        console.warn('⚠️ Possíveis duplicatas detectadas:', duplicates);
+        showInfoMessage(`⚠️ ${duplicates.length} grupos de atividades com possíveis duplicatas encontrados - verifique o console`);
+    } else {
+        console.log('✅ Nenhuma duplicata detectada');
+        showInfoMessage('✅ Nenhuma duplicata de atividades encontrada');
+    }
+};
 
 // Função para testar sincronização
 window.testSync = function() {
