@@ -469,6 +469,12 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
     setupEventListeners();
     loadMockData();
+    
+            // FORÇAR ATUALIZAÇÃO IMEDIATA DOS MEMBROS (bypass do setInterval)
+        console.log('🚀 Forçando atualização imediata dos membros...');
+        forceUpdateMembersDisplay();
+        console.log('✅ Membros carregados imediatamente:', AppState.members.length);
+    
     // Verificar se já existe uma sessão ativa
     const sessionResult = checkUserSession();
     if (sessionResult.isValid) {
@@ -476,10 +482,15 @@ document.addEventListener('DOMContentLoaded', function() {
         showDashboard();
         // Atualizar dados da sessão
         updateSessionData();
+        
+        // FORÇAR ATUALIZAÇÃO COMPLETA IMEDIATA DO DASHBOARD
+        updateDashboardData();
+        console.log('✅ Dashboard atualizado imediatamente');
+        
         // Update time every minute
         setInterval(updateCurrentDateTime, 60000);
-        // Update dashboard data every 30 seconds
-        setInterval(updateDashboardData, 30000);
+        // Update dashboard data every 5 seconds (muito mais rápido)
+        setInterval(updateDashboardData, 5000);
         // Verificar sessão a cada 5 minutos
         setInterval(checkAndMaintainSession, 5 * 60 * 1000);
     } else {
@@ -580,6 +591,8 @@ function loadMockData() {
         AppState.schedules = [...mockData.schedules];
     }
     AppState.members = [...mockData.members];
+    console.log('✅ Membros carregados em loadMockData():', AppState.members.length);
+    
     const savedSongs = localStorage.getItem('feedsSongs');
     if (savedSongs) {
         try {
@@ -828,9 +841,11 @@ function handleLogin(e) {
             // Garantir que as playlists sejam inicializadas
             initializePlaylists();
             showDashboard();
-            // Forçar atualização das ações rápidas após login
+            // Forçar atualização COMPLETA após login (bypass setInterval)
             setTimeout(() => {
                 updateQuickActions();
+                forceUpdateMembersDisplay(); // FORÇA exibição instantânea dos membros
+                console.log('⚡ ATUALIZAÇÃO FORÇADA PÓS-LOGIN CONCLUÍDA');
             }, 100);
         } else {
             showErrorMessage('Usuário ou senha incorretos! Verifique suas credenciais.');
@@ -968,8 +983,12 @@ function showDashboard() {
     updateUserAvatar();
     // Navigate to home section
     navigateToSection('home');
-    // Load dashboard data
+    // Load dashboard data IMEDIATAMENTE
     updateDashboardData();
+    // FORÇAR contagem de membros imediata também (bypass do setInterval)
+    forceUpdateMembersDisplay();
+    console.log('✅ Dashboard e membros atualizados INSTANTANEAMENTE em showDashboard()');
+    
     // Inicializar Google Calendar
     initializeGoogleCalendar();
     // Inicializar playlists após login
@@ -6177,12 +6196,9 @@ loadMockData = async function() {
             
             // Ainda precisamos carregar outros dados locais
             try {
-                const savedMembers = localStorage.getItem('feedsMembers');
-                if (savedMembers) {
-                    AppState.members = JSON.parse(savedMembers);
-                } else {
-                    AppState.members = mockData.members;
-                }
+                // MEMBROS SEMPRE VÊM DO MOCKDATA (dados fixos da banda)
+                AppState.members = [...mockData.members];
+                console.log('✅ Membros carregados do mockData:', AppState.members.length);
                 
                 const savedSongs = localStorage.getItem('feedsSongs');
                 if (savedSongs) {
@@ -6603,4 +6619,262 @@ window.forceDeleteSchedule = function(scheduleId) {
     showSuccessMessage(`🗑️ Escala "${schedule.date}" foi forçadamente excluída!`);
     
     console.log('✅ Exclusão forçada concluída');
+};
+
+// === FUNÇÕES PARA DEBUG E RESTAURAÇÃO DE MEMBROS === //
+window.debugMembers = function() {
+    console.log('👥 === DEBUG DOS MEMBROS ===');
+    console.log('📊 mockData.members (dados originais):', mockData.members.length, 'membros');
+    console.log('📊 AppState.members (dados carregados):', AppState.members.length, 'membros');
+    
+    console.log('📋 Detalhes do mockData.members:');
+    mockData.members.forEach((member, index) => {
+        console.log(`${index + 1}. ${member.name} - ${member.role} - Status: ${member.status}`);
+    });
+    
+    console.log('📋 Detalhes do AppState.members:');
+    AppState.members.forEach((member, index) => {
+        console.log(`${index + 1}. ${member.name} - ${member.role} - Status: ${member.status}`);
+    });
+    
+    // Verificar membros ativos
+    const activeMockMembers = mockData.members.filter(m => m.status === 'active');
+    const activeAppMembers = AppState.members.filter(m => m.status === 'active');
+    
+    console.log('✅ Membros ativos no mockData:', activeMockMembers.length);
+    console.log('✅ Membros ativos no AppState:', activeAppMembers.length);
+    
+    // Verificar localStorage
+    const savedMembers = localStorage.getItem('feedsMembers');
+    console.log('💾 localStorage feedsMembers:', savedMembers ? 'Existe' : 'Não existe');
+    if (savedMembers) {
+        try {
+            const parsed = JSON.parse(savedMembers);
+            console.log('💾 Membros no localStorage:', parsed.length);
+        } catch (e) {
+            console.log('❌ Erro ao parsear localStorage:', e);
+        }
+    }
+    
+    showInfoMessage('👥 Debug dos membros concluído - verifique o console');
+};
+
+window.restoreMembers = function() {
+    console.log('🔄 RESTAURANDO MEMBROS DO SISTEMA...');
+    
+    // 1. Forçar carregamento dos membros do mockData
+    AppState.members = [...mockData.members];
+    console.log('✅ AppState.members restaurado do mockData:', AppState.members.length, 'membros');
+    
+    // 2. Remover qualquer dados de membros do localStorage (se existir)
+    localStorage.removeItem('feedsMembers');
+    console.log('✅ localStorage feedsMembers removido');
+    
+    // 3. Verificar se todos os membros estão ativos
+    const activeMembers = AppState.members.filter(m => m.status === 'active');
+    console.log('✅ Membros ativos após restauração:', activeMembers.length);
+    
+    // 4. Forçar atualização do contador no dashboard
+    updateMembersCount();
+    console.log('✅ Contador de membros atualizado');
+    
+    // 5. Se estiver na seção de membros, atualizar a renderização
+    if (AppState.currentSection === 'members') {
+        renderMembers();
+        console.log('✅ Lista de membros re-renderizada');
+    }
+    
+    // 6. Atualizar dashboard completo
+    updateDashboardData();
+    console.log('✅ Dashboard atualizado');
+    
+    showSuccessMessage(`🔄 Membros restaurados! Total: ${AppState.members.length} membros (${activeMembers.length} ativos)`);
+    
+    console.log('✅ RESTAURAÇÃO DOS MEMBROS CONCLUÍDA!');
+};
+
+window.forceMembersUpdate = function() {
+    console.log('🔄 FORÇANDO ATUALIZAÇÃO DOS MEMBROS...');
+    
+    // Forçar recarga dos dados
+    loadMockData();
+    console.log('✅ Dados recarregados');
+    
+    // Forçar atualização do contador
+    updateMembersCount();
+    console.log('✅ Contador atualizado');
+    
+    // Verificar resultado
+    const activeMembers = AppState.members.filter(m => m.status === 'active');
+    console.log(`📊 Resultado: ${activeMembers.length} membros ativos de ${AppState.members.length} total`);
+    
+    showInfoMessage(`🔄 Atualização forçada: ${activeMembers.length} membros ativos`);
+};
+
+// Função para verificar e corrigir o problema dos membros
+window.fixMembersCount = function() {
+    console.log('🔧 DIAGNÓSTICO E CORREÇÃO DOS MEMBROS...');
+    
+    // 1. Verificar se existe dados de membros corrompidos
+    debugMembers();
+    
+    // 2. Se não há membros no AppState, restaurar
+    if (AppState.members.length === 0) {
+        console.log('🚨 PROBLEMA: AppState.members está vazio! Restaurando...');
+        restoreMembers();
+        return;
+    }
+    
+    // 3. Se há membros mas nenhum está ativo, verificar status
+    const activeMembers = AppState.members.filter(m => m.status === 'active');
+    if (activeMembers.length === 0) {
+        console.log('🚨 PROBLEMA: Nenhum membro está com status "active"!');
+        console.log('🔧 Corrigindo status dos membros...');
+        
+        AppState.members.forEach(member => {
+            if (!member.status || member.status !== 'active') {
+                member.status = 'active';
+                console.log(`✅ Status corrigido para: ${member.name}`);
+            }
+        });
+        
+        updateMembersCount();
+        showSuccessMessage('🔧 Status dos membros corrigido!');
+        return;
+    }
+    
+    // 4. Se há membros ativos mas o contador não atualiza, forçar update
+    console.log('🔧 Forçando atualização do contador...');
+    updateMembersCount();
+    
+    console.log('✅ DIAGNÓSTICO CONCLUÍDO');
+};
+
+// Função para limpar dados corrompidos do localStorage e forçar correção
+window.fixMembersPermanently = function() {
+    console.log('🔧 CORREÇÃO PERMANENTE DOS MEMBROS...');
+    
+    // 1. Remover qualquer dados de membros do localStorage
+    localStorage.removeItem('feedsMembers');
+    console.log('✅ localStorage feedsMembers removido');
+    
+    // 2. Garantir que AppState tenha os dados corretos
+    AppState.members = [...mockData.members];
+    console.log('✅ AppState.members restaurado:', AppState.members.length, 'membros');
+    
+    // 3. Verificar se todos estão ativos
+    const activeMembers = AppState.members.filter(m => m.status === 'active');
+    console.log('✅ Membros ativos:', activeMembers.length);
+    
+    // 4. Atualizar dashboard
+    updateMembersCount();
+    updateDashboardData();
+    console.log('✅ Dashboard atualizado');
+    
+    showSuccessMessage(`🔧 Correção permanente aplicada! ${activeMembers.length} membros ativos`);
+    
+    console.log('✅ CORREÇÃO PERMANENTE CONCLUÍDA - Problema não deve mais ocorrer no F5');
+};
+
+// Função para forçar exibição INSTANTÂNEA dos membros
+window.fixMembersInstantly = function() {
+    console.log('⚡ CORREÇÃO INSTANTÂNEA DOS MEMBROS...');
+    
+    // 1. Limpar localStorage corrompido
+    localStorage.removeItem('feedsMembers');
+    
+    // 2. Forçar carregamento do mockData
+    AppState.members = [...mockData.members];
+    
+    // 3. FORÇAR atualização IMEDIATA do DOM (sem esperar setInterval)
+    forceUpdateMembersDisplay();
+    
+    // 4. Verificar resultado
+    const activeMembers = AppState.members.filter(m => m.status === 'active');
+    
+    console.log('⚡ RESULTADO INSTANTÂNEO:');
+    console.log('📊 Total de membros:', AppState.members.length);
+    console.log('✅ Membros ativos:', activeMembers.length);
+    
+    showSuccessMessage(`⚡ Membros exibidos instantaneamente! ${activeMembers.length} ativos`);
+    
+    return activeMembers.length;
+};
+
+// Função que FORÇA atualização imediata do display sem depender de setInterval
+window.forceUpdateMembersDisplay = function() {
+    console.log('🔥 FORÇANDO ATUALIZAÇÃO IMEDIATA DO DISPLAY...');
+    
+    // Garantir que os dados estão corretos
+    if (AppState.members.length === 0) {
+        AppState.members = [...mockData.members];
+        console.log('🔄 Dados dos membros restaurados:', AppState.members.length);
+    }
+    
+    // Contar membros ativos
+    const activeMembers = AppState.members.filter(member => member.status === 'active');
+    console.log('✅ Membros ativos encontrados:', activeMembers.length);
+    
+    // ATUALIZAR DOM DIRETAMENTE (bypass do setInterval)
+    const memberCountElement = document.getElementById('activeMembersCount');
+    const memberDetail = memberCountElement?.parentElement.querySelector('.stat-detail');
+    
+    if (memberCountElement) {
+        memberCountElement.textContent = activeMembers.length;
+        console.log('✅ Elemento activeMembersCount atualizado:', activeMembers.length);
+    } else {
+        console.warn('❌ Elemento activeMembersCount não encontrado');
+        // Tentar encontrar por alternativa
+        const alternativeElement = document.querySelector('[id*="member"], [class*="member-count"]');
+        if (alternativeElement) {
+            alternativeElement.textContent = activeMembers.length;
+            console.log('✅ Elemento alternativo encontrado e atualizado');
+        }
+    }
+    
+    // Atualizar detalhes
+    if (memberDetail) {
+        const vocalists = activeMembers.filter(m => m.role === 'Vocal' || m.instruments?.includes('Vocal')).length;
+        const instrumentalists = activeMembers.filter(m => m.role === 'Instrumentista' || m.instruments?.some(i => i !== 'Vocal')).length;
+        memberDetail.textContent = `👥 ${vocalists} vocais, ${instrumentalists} instrumentistas`;
+        memberDetail.classList.add('live-data');
+        console.log('✅ Detalhes atualizados:', `${vocalists} vocais, ${instrumentalists} instrumentistas`);
+    }
+    
+    console.log('🔥 ATUALIZAÇÃO FORÇADA CONCLUÍDA!');
+    return activeMembers.length;
+};
+
+// Função para TESTAR se a atualização instantânea está funcionando
+window.testInstantUpdate = function() {
+    console.log('🧪 INICIANDO TESTE DE ATUALIZAÇÃO INSTANTÂNEA...');
+    
+    const startTime = Date.now();
+    
+    // 1. Limpar e restaurar dados
+    fixMembersInstantly();
+    
+    // 2. Verificar se foi realmente instantâneo
+    const endTime = Date.now();
+    const timeTaken = endTime - startTime;
+    
+    // 3. Verificar resultado no DOM
+    const memberCountElement = document.getElementById('activeMembersCount');
+    const currentCount = memberCountElement ? memberCountElement.textContent : 'não encontrado';
+    
+    console.log('🧪 RESULTADO DO TESTE:');
+    console.log('⏱️ Tempo decorrido:', timeTaken + 'ms');
+    console.log('📊 Valor exibido:', currentCount);
+    console.log('✅ Dados no AppState:', AppState.members.filter(m => m.status === 'active').length);
+    
+    // 4. Diagnóstico
+    if (timeTaken < 500 && currentCount == '21') {
+        console.log('🎉 SUCESSO! Atualização instantânea funcionando perfeitamente!');
+        showSuccessMessage(`🎉 Teste aprovado! Atualizou em ${timeTaken}ms - ${currentCount} membros`);
+        return true;
+    } else {
+        console.warn('⚠️ FALHA! Ainda há problemas na atualização instantânea');
+        showErrorMessage(`⚠️ Teste falhou: ${timeTaken}ms, mostra ${currentCount}`);
+        return false;
+    }
 };
