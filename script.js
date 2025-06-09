@@ -453,133 +453,7 @@ const mockData = {
         },
     ],
     schedules: [
-        {
-            id: 0,
-            date: 'SÁBADO - 07/06',
-            status: 'published',
-            roles: {
-                'ministro': 'Stephanie',
-                'back_vocal': ['Ana', 'Ane'],
-                'violao': 'Vitória',
-                'guitarra': 'Daniel',
-                'teclado': 'Elo',
-                'bateria': 'Luma',
-                'baixo': 'Juninho'
-            },
-            louvores: [],
-            songs: ['Bondade de Deus', 'Reckless Love', 'Oceans']
-        },
-        {
-            id: 1,
-            date: 'DOMINGO - 08/06',
-            status: 'published',
-            roles: {
-                'ministro': 'Pastora Lilian',
-                'back_vocal': ['Stephanie', 'Ana'],
-                'violao': 'Vitória',
-                'guitarra': 'Daniel',
-                'teclado': 'Elo',
-                'bateria': 'Luma',
-                'baixo': 'Juninho'
-            },
-            songs: ['Águas Purificadoras', 'Bondade de Deus', 'Tua Graça Me Basta']
-        },
-        {
-            id: 2,
-            date: 'DOMINGO - 15/06',
-            status: 'published',
-            roles: {
-                'ministro': 'Pastor Rodrigo',
-                'back_vocal': ['Fernando', 'Kerbelin'],
-                'violao': 'Pastor Rodrigo',
-                'guitarra': 'Fernando',
-                'teclado': 'Fernando',
-                'bateria': 'Kaue',
-                'baixo': 'Kauê'
-            },
-            louvores: [],
-            songs: ['Santo Pra Sempre', 'Porque Ele Vive', 'Bondade de Deus']
-        },
-        {
-            id: 3,
-            date: 'DOMINGO - 22/06',
-            status: 'published',
-            roles: {
-                'ministro': 'Stephanie',
-                'back_vocal': ['Ane', 'Eduarda'],
-                'violao': 'Daniel',
-                'guitarra': 'Daniel',
-                'teclado': 'Dudu',
-                'bateria': 'Dudu',
-                'baixo': 'Juninho'
-            },
-            louvores: [],
-            songs: ['Reckless Love', 'What A Beautiful Name', 'Oceans']
-        },
-        {
-            id: 4,
-            date: 'DOMINGO - 29/06',
-            status: 'draft',
-            roles: {
-                'ministro': 'Flávia',
-                'back_vocal': ['Larissa'],
-                'violao': 'Vitória',
-                'guitarra': 'N/A',
-                'teclado': 'Elo',
-                'bateria': 'Luma',
-                'baixo': 'N/A'
-            },
-            louvores: [],
-            songs: []
-        },
-        {
-            id: 5,
-            date: 'DOMINGO - 06/07',
-            status: 'draft',
-            roles: {
-                'ministro': '',
-                'back_vocal': [],
-                'violao': '',
-                'guitarra': '',
-                'teclado': '',
-                'bateria': '',
-                'baixo': ''
-            },
-            louvores: [],
-            songs: []
-        },
-        {
-            id: 6,
-            date: 'DOMINGO - 13/07',
-            status: 'draft',
-            roles: {
-                'ministro': 'Pastora Lilian',
-                'back_vocal': ['Stephanie'],
-                'violao': 'Pastor Rodrigo',
-                'guitarra': 'Daniel',
-                'teclado': 'Fernando',
-                'bateria': 'Kaue',
-                'baixo': 'Juninho'
-            },
-            louvores: [],
-            songs: []
-        },
-        {
-            id: 7,
-            date: 'QUARTA-FEIRA - 16/07',
-            status: 'draft',
-            roles: {
-                'ministro': 'Pastor Rodrigo',
-                'back_vocal': ['N/A'],
-                'violao': 'Pastor Rodrigo',
-                'guitarra': 'Daniel',
-                'teclado': 'N/A',
-                'bateria': 'Kaue',
-                'baixo': 'Juninho'
-            },
-            louvores: [],
-            songs: []
-        }
+        // Sistema iniciará sem escalas - os líderes criarão as escalas reais aqui
     ],
     songs: [
         { id: 1, title: 'Águas Purificadoras', artist: 'Diante do Trono', key: 'G', bpm: 72 },
@@ -748,6 +622,8 @@ function saveToLocalStorage() {
         localStorage.setItem('feedsActivities', JSON.stringify(AppState.activities));
         localStorage.setItem('feedsPlaylists', JSON.stringify(AppState.playlists));
     } catch (error) {
+        console.error('Erro ao salvar no localStorage:', error);
+        showErrorMessage('Erro ao salvar dados localmente');
     }
 }
 // === SISTEMA DE SESSÃO PERSISTENTE === //
@@ -791,6 +667,7 @@ function checkUserSession() {
             session: session 
         };
     } catch (error) {
+        console.error('Erro ao verificar sessão:', error);
         return { isValid: false, reason: 'error' };
     }
 }
@@ -803,6 +680,7 @@ function updateSessionData() {
             localStorage.setItem('feedsUserSession', JSON.stringify(session));
         }
     } catch (error) {
+        console.warn('Erro ao atualizar dados da sessão:', error);
     }
 }
 function clearSession() {
@@ -810,6 +688,7 @@ function clearSession() {
         localStorage.removeItem('feedsUserSession');
         localStorage.removeItem('feedsUser');
     } catch (error) {
+        console.warn('Erro ao limpar sessão:', error);
     }
 }
 function generateSessionId() {
@@ -849,6 +728,7 @@ function extendSession() {
             localStorage.setItem('feedsUserSession', JSON.stringify(session));
         }
     } catch (error) {
+        console.warn('Erro ao estender sessão:', error);
     }
 }
 function setupEventListeners() {
@@ -1123,10 +1003,12 @@ function navigateToSection(sectionName) {
         } else {
             // Debugging - listar todas as seções
             allSections.forEach(section => {
+                console.warn('Seção disponível:', section.id);
             });
         }
         AppState.currentSection = sectionName;
     } catch (error) {
+        console.error('Erro ao navegar para seção:', sectionName, error);
     }
     // Load section-specific data and update UI based on permissions
     switch(sectionName) {
@@ -2141,14 +2023,17 @@ async function fetchGoogleCalendarEvents() {
             const data = await response.json();
             if (data.error) {
                 if (data.error.code === 404) {
+                console.warn('Calendário não encontrado:', calendarioId);
                 }
                 continue; // Tentar próximo calendário
             }
             if (data.items && data.items.length > 0) {
                 allEvents = allEvents.concat(data.items);
             } else {
+                console.log('Nenhum evento encontrado no calendário:', calendarioId);
             }
         } catch (error) {
+            console.warn('Erro ao acessar calendário:', calendarioId, error);
             continue; // Tentar próximo calendário
         }
     }
@@ -2236,6 +2121,7 @@ async function updateNextScheduleFromCalendar() {
             updateNextSchedule();
         }
     } catch (error) {
+        console.warn('Erro ao atualizar escala do calendário:', error);
         // Fallback para dados locais
         updateNextSchedule();
     }
@@ -2275,6 +2161,7 @@ async function updateNextEventFromCalendar() {
             `;
         }
     } catch (error) {
+        console.warn('Erro ao atualizar próximo evento:', error);
     }
 }
 // Função para inicializar integração com Google Calendar
@@ -2520,6 +2407,7 @@ function addLouvorToSchedule(videoId, title, channel, thumbnail, duration) {
     try {
         saveToLocalStorage();
     } catch (error) {
+        console.error('Erro ao salvar dados:', error);
         showErrorMessage('Erro ao salvar os dados');
         return;
     }
@@ -2528,6 +2416,7 @@ function addLouvorToSchedule(videoId, title, channel, thumbnail, duration) {
     if (louvorsList) {
         louvorsList.innerHTML = renderLouvoresList(schedule.louvores, scheduleId);
     } else {
+        console.warn('Elemento louvores não encontrado para scheduleId:', scheduleId);
     }
     // Fechar modal
     closeLouvorModal();
@@ -2537,6 +2426,7 @@ function addLouvorToSchedule(videoId, title, channel, thumbnail, duration) {
     try {
         addActivity('louvor_add', 'Louvor adicionado', `"${title}" foi adicionado à escala`, 'success');
     } catch (error) {
+        console.warn('Erro ao adicionar atividade:', error);
     }
 }
 function removeLouvor(scheduleId, videoId) {
@@ -6566,4 +6456,151 @@ window.forcePlaylistUpdate = function() {
     if (syncManager && syncManager.isInitialized) {
         syncManager.syncPlaylists(AppState.playlists);
     }
+};
+
+// === FUNÇÃO PARA LIMPEZA COMPLETA DO SISTEMA === //
+window.resetSystemCompletely = function() {
+    console.log('🧹 INICIANDO LIMPEZA COMPLETA DO SISTEMA...');
+    
+    // Confirmação dupla antes de limpar
+    const confirm1 = window.confirm('⚠️ ATENÇÃO: Isso irá apagar TODAS as escalas e atividades do sistema. Continuar?');
+    if (!confirm1) return;
+    
+    const confirm2 = window.confirm('🚨 ÚLTIMA CHANCE: Todos os dados serão perdidos. Tem certeza absoluta?');
+    if (!confirm2) return;
+    
+    // 1. Limpar localStorage
+    console.log('🗑️ Limpando localStorage...');
+    localStorage.removeItem('feedsSchedules');
+    localStorage.removeItem('feedsActivities');
+    localStorage.removeItem('feedsPlaylists');
+    localStorage.removeItem('feedsSongs');
+    localStorage.removeItem('feedsMembers');
+    localStorage.removeItem('feedsUserSession');
+    localStorage.removeItem('feedsUser');
+    
+    // 2. Resetar AppState para dados limpos
+    console.log('🔄 Resetando dados do sistema...');
+    AppState.schedules = [...mockData.schedules]; // Array vazio agora
+    AppState.activities = [];
+    AppState.playlists = [];
+    
+    // 3. Forçar sincronização com Firebase (dados limpos)
+    console.log('🔥 Sincronizando com Firebase...');
+    if (syncManager && syncManager.isInitialized) {
+        syncManager.syncSchedules([]);
+        syncManager.syncActivities([]);
+        syncManager.syncPlaylists([]);
+    }
+    
+    // 4. Atualizar interface
+    console.log('🖥️ Atualizando interface...');
+    if (AppState.currentSection === 'schedules') {
+        renderSchedules();
+    }
+    if (AppState.currentSection === 'home') {
+        updateRecentActivities();
+        updateNextSchedule();
+    }
+    
+    // 5. Salvar estado limpo
+    saveToLocalStorage();
+    
+    console.log('✅ SISTEMA COMPLETAMENTE LIMPO!');
+    console.log('📋 Escalas:', AppState.schedules.length);
+    console.log('📋 Atividades:', AppState.activities.length);
+    
+    showSuccessMessage('🧹 Sistema completamente limpo! Recarregando página...');
+    
+    // 6. Recarregar página após 2 segundos
+    setTimeout(() => {
+        window.location.reload();
+    }, 2000);
+};
+
+// Função para debug rápido
+window.checkSystemData = function() {
+    console.log('📊 DADOS ATUAIS DO SISTEMA:');
+    console.log('Escalas (mockData):', mockData.schedules.length);
+    console.log('Escalas (AppState):', AppState.schedules.length);
+    console.log('Atividades:', AppState.activities.length);
+    console.log('localStorage schedules:', localStorage.getItem('feedsSchedules') ? JSON.parse(localStorage.getItem('feedsSchedules')).length : 'vazio');
+    console.log('localStorage activities:', localStorage.getItem('feedsActivities') ? JSON.parse(localStorage.getItem('feedsActivities')).length : 'vazio');
+    
+    // Mostrar detalhes das escalas
+    console.log('📋 Escalas detalhadas:', AppState.schedules);
+};
+
+// === FUNÇÃO PARA FORÇAR EXCLUSÃO DE ESCALAS ESPECÍFICAS === //
+window.forceDeleteAllSchedules = function() {
+    console.log('🗑️ FORÇANDO EXCLUSÃO DE TODAS AS ESCALAS...');
+    
+    const confirm1 = window.confirm('⚠️ Isso irá forçar a exclusão de TODAS as escalas, incluindo as que não conseguem ser excluídas normalmente. Continuar?');
+    if (!confirm1) return;
+    
+    // 1. Limpar completamente AppState.schedules
+    AppState.schedules = [];
+    console.log('✅ AppState.schedules limpo');
+    
+    // 2. Sobrescrever localStorage com array vazio
+    localStorage.setItem('feedsSchedules', JSON.stringify([]));
+    console.log('✅ localStorage limpo');
+    
+    // 3. Forçar sincronização Firebase com array vazio
+    if (syncManager && syncManager.isInitialized) {
+        syncManager.syncSchedules([]);
+        console.log('✅ Firebase sincronizado com array vazio');
+    }
+    
+    // 4. Atualizar interface imediatamente
+    renderSchedules();
+    updateDashboardData();
+    updateNextSchedule();
+    console.log('✅ Interface atualizada');
+    
+    showSuccessMessage('🗑️ Todas as escalas foram forçadamente excluídas!');
+    
+    // 5. Recarregar página para garantir
+    setTimeout(() => {
+        console.log('🔄 Recarregando página para confirmar limpeza...');
+        window.location.reload();
+    }, 2000);
+};
+
+// Função para excluir uma escala específica (bypass das permissões)
+window.forceDeleteSchedule = function(scheduleId) {
+    console.log(`🗑️ Forçando exclusão da escala ID: ${scheduleId}`);
+    
+    // Encontrar a escala
+    const scheduleIndex = AppState.schedules.findIndex(s => s.id == scheduleId);
+    
+    if (scheduleIndex === -1) {
+        console.log('❌ Escala não encontrada no AppState');
+        return;
+    }
+    
+    const schedule = AppState.schedules[scheduleIndex];
+    console.log('📋 Escala encontrada:', schedule);
+    
+    // Remover do AppState
+    AppState.schedules.splice(scheduleIndex, 1);
+    console.log('✅ Escala removida do AppState');
+    
+    // Salvar no localStorage
+    saveToLocalStorage();
+    console.log('✅ localStorage atualizado');
+    
+    // Sincronizar com Firebase
+    if (syncManager && syncManager.isInitialized) {
+        syncManager.syncSchedules(AppState.schedules);
+        console.log('✅ Firebase sincronizado');
+    }
+    
+    // Atualizar interface
+    renderSchedules();
+    updateDashboardData();
+    
+    showSuccessMessage(`🗑️ Escala "${schedule.date}" foi forçadamente excluída!`);
+    
+    console.log('✅ Exclusão forçada concluída');
 };
