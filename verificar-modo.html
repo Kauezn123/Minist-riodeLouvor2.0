@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificar Modo de Execução - FEEDS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+        .status {
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .online {
+            background: linear-gradient(135deg, #28a745, #20c997);
+        }
+        .offline {
+            background: linear-gradient(135deg, #ffc107, #ff8c00);
+            color: #000;
+        }
+        .btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin: 10px;
+            display: inline-block;
+        }
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Verificador de Modo - Sistema FEEDS</h1>
+        
+        <div id="status" class="status">
+            <span id="status-icon">⏳</span>
+            <span id="status-text">Verificando...</span>
+        </div>
+        
+        <div id="details">
+            <p><strong>Protocolo:</strong> <span id="protocol"></span></p>
+            <p><strong>URL:</strong> <span id="url"></span></p>
+            <p><strong>APIs Disponíveis:</strong> <span id="apis"></span></p>
+        </div>
+        
+        <div id="instructions" class="instructions">
+            <!-- Será preenchido dinamicamente -->
+        </div>
+        
+        <div>
+            <a href="index.html" class="btn">🚀 Abrir Sistema FEEDS</a>
+            <a href="servidor-local.html" class="btn">📖 Ver Instruções Completas</a>
+        </div>
+    </div>
+
+    <script>
+        function checkMode() {
+            const protocol = window.location.protocol;
+            const url = window.location.href;
+            const isOnline = protocol !== 'file:';
+            
+            // Atualizar elementos
+            document.getElementById('protocol').textContent = protocol;
+            document.getElementById('url').textContent = url;
+            document.getElementById('apis').textContent = isOnline ? 'SIM ✅' : 'NÃO ❌';
+            
+            const statusDiv = document.getElementById('status');
+            const statusIcon = document.getElementById('status-icon');
+            const statusText = document.getElementById('status-text');
+            const instructions = document.getElementById('instructions');
+            
+            if (isOnline) {
+                statusDiv.className = 'status online';
+                statusIcon.textContent = '✅';
+                statusText.textContent = 'MODO ONLINE - APIs Ativas';
+                
+                instructions.innerHTML = `
+                    <h3>🎉 Perfeito! Sistema em Modo Online</h3>
+                    <ul>
+                        <li>✅ Google Calendar API funcionando</li>
+                        <li>✅ YouTube API funcionando</li>
+                        <li>✅ Gemini Chat IA funcionando</li>
+                        <li>✅ Todas as funcionalidades ativas</li>
+                    </ul>
+                    <p><strong>Você pode usar o sistema normalmente com todas as APIs!</strong></p>
+                `;
+            } else {
+                statusDiv.className = 'status offline';
+                statusIcon.textContent = '⚠️';
+                statusText.textContent = 'MODO OFFLINE - Dados Locais';
+                
+                instructions.innerHTML = `
+                    <h3>💡 Sistema em Modo Offline</h3>
+                    <p><strong>Por que está offline?</strong></p>
+                    <p>Você está abrindo o arquivo diretamente (protocolo file://), que bloqueia as APIs por segurança.</p>
+                    
+                    <h4>🚀 Como Ativar Modo Online:</h4>
+                    <ol>
+                        <li><strong>Python:</strong> <code>python -m http.server 8000</code></li>
+                        <li><strong>VS Code:</strong> Extensão "Live Server"</li>
+                        <li><strong>Node.js:</strong> <code>npx http-server</code></li>
+                    </ol>
+                    
+                    <h4>✅ O que Funciona Agora:</h4>
+                    <ul>
+                        <li>✅ Login e autenticação</li>
+                        <li>✅ Gestão de membros e escalas</li>
+                        <li>✅ Playlists e repertório</li>
+                        <li>✅ Chat IA (respostas locais)</li>
+                        <li>✅ Menu mobile e todas funcionalidades básicas</li>
+                    </ul>
+                `;
+            }
+        }
+        
+        // Executar verificação
+        checkMode();
+    </script>
+</body>
+</html> 

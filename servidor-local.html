@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FEEDS - Servidor Local</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .warning {
+            background: rgba(255, 193, 7, 0.2);
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .success {
+            background: rgba(40, 167, 69, 0.2);
+            border: 2px solid #28a745;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .info {
+            background: rgba(23, 162, 184, 0.2);
+            border: 2px solid #17a2b8;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        .step {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+        .step h3 {
+            margin-top: 0;
+            color: #28a745;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: transform 0.2s;
+            margin: 10px 5px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+        }
+        .icon {
+            font-size: 1.2em;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 Sistema FEEDS - Configuração para Servidor Local</h1>
+        
+        <div class="warning">
+            <h3>⚠️ Problema Identificado</h3>
+            <p>O sistema está sendo executado via protocolo <code>file://</code>, o que causa erros de CORS (Cross-Origin Resource Sharing) nas APIs do Google Calendar e YouTube.</p>
+            <p><strong>Erros encontrados:</strong></p>
+            <ul>
+                <li>❌ <code>Admin.jpeg</code> não encontrado - <strong>CORRIGIDO ✅</strong></li>
+                <li>❌ APIs do Google não funcionam via file://</li>
+                <li>❌ Erro 404 nas chamadas de API</li>
+            </ul>
+        </div>
+
+        <div class="success">
+            <h3>✅ Correções Aplicadas</h3>
+            <ul>
+                <li>✅ Arquivo <code>Admin.jpeg</code> criado na pasta <code>foto/</code></li>
+                <li>✅ Verificação de protocolo adicionada</li>
+                <li>✅ Fallback para dados locais quando APIs não estão disponíveis</li>
+                <li>✅ Melhor tratamento de erros HTTP</li>
+                <li>✅ Logs informativos para debugging</li>
+            </ul>
+        </div>
+
+        <div class="info">
+            <h3>🚀 Soluções Recomendadas</h3>
+            
+            <div class="step">
+                <h3>1. Usar Servidor Local (Recomendado)</h3>
+                <p>Para usar as APIs do Google, você precisa servir o arquivo via HTTP. Escolha uma das opções:</p>
+                
+                <h4>Servidor Python (Mais Simples):</h4>
+                <div class="code-block">
+# No terminal, navegue até a pasta do projeto e execute:
+python -m http.server 8000
+
+# Ou se tiver Python 2:
+python -m SimpleHTTPServer 8000
+
+# Depois acesse: http://localhost:8000
+                </div>
+
+                <h4>Live Server (VS Code):</h4>
+                <div class="code-block">
+1. Instale a extensão "Live Server" no VS Code
+2. Clique com botão direito no index.html
+3. Selecione "Open with Live Server"
+                </div>
+
+                <h4>Node.js (http-server):</h4>
+                <div class="code-block">
+# Instalar globalmente:
+npm install -g http-server
+
+# Executar na pasta do projeto:
+http-server -p 8000
+
+# Acesse: http://localhost:8000
+                </div>
+            </div>
+
+            <div class="step">
+                <h3>2. Configurar APIs do Google</h3>
+                <p>Para usar as APIs reais, você precisará:</p>
+                <ul>
+                    <li>Criar um projeto no Google Cloud Console</li>
+                    <li>Ativar as APIs do Calendar e YouTube</li>
+                    <li>Gerar chaves de API</li>
+                    <li>Configurar domínios autorizados</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <h3>3. Modo Offline (Atual)</h3>
+                <p>O sistema já funciona com dados locais quando as APIs não estão disponíveis:</p>
+                <ul>
+                    <li>✅ Calendário usa dados mockados</li>
+                    <li>✅ YouTube usa banco de dados local</li>
+                    <li>✅ Todas as funcionalidades básicas funcionam</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>🔧 Status Atual do Sistema</h3>
+            <p><strong>Funcionando normalmente:</strong></p>
+            <ul>
+                <li>✅ Login e autenticação</li>
+                <li>✅ Gestão de membros e escalas</li>
+                <li>✅ Playlists e repertório</li>
+                <li>✅ Chat com IA</li>
+                <li>✅ Todas as fotos dos membros</li>
+                <li>✅ Menu mobile</li>
+            </ul>
+            
+            <p><strong>Limitado (mas funcional):</strong></p>
+            <ul>
+                <li>📅 Google Calendar (usa dados locais)</li>
+                <li>🎵 YouTube API (usa banco local)</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="index.html" class="btn btn-primary">
+                <span class="icon">🚀</span>
+                Abrir Sistema FEEDS
+            </a>
+            <a href="https://console.cloud.google.com" class="btn" target="_blank">
+                <span class="icon">🔑</span>
+                Google Cloud Console
+            </a>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px; opacity: 0.8; font-size: 0.9em;">
+            <p>Sistema FEEDS - versão corrigida com tratamento de erros aprimorado</p>
+        </div>
+    </div>
+</body>
+</html> 

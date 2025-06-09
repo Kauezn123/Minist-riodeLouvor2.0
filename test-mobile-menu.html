@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Menu Mobile - FEEDS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f1f5f9;
+        }
+        
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .test-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .test-header h1 {
+            color: #2563eb;
+            margin-bottom: 0.5rem;
+        }
+        
+        .test-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            border: 2px solid;
+        }
+        
+        .test-status.success {
+            background: #f0fdf4;
+            border-color: #16a34a;
+            color: #15803d;
+        }
+        
+        .test-status.warning {
+            background: #fffbeb;
+            border-color: #d97706;
+            color: #c2410c;
+        }
+        
+        .test-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .test-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+        }
+        
+        .test-instructions {
+            background: #e0f2fe;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #0891b2;
+            margin: 1.5rem 0;
+        }
+        
+        .test-instructions h3 {
+            margin-top: 0;
+            color: #0e7490;
+        }
+        
+        .device-info {
+            background: #fafafa;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: monospace;
+            margin: 1rem 0;
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-indicator {
+                background: #16a34a;
+                color: white;
+                padding: 10px;
+                text-align: center;
+                border-radius: 8px;
+                margin-bottom: 1rem;
+            }
+        }
+        
+        @media (min-width: 769px) {
+            .desktop-indicator {
+                background: #d97706;
+                color: white;
+                padding: 10px;
+                text-align: center;
+                border-radius: 8px;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🎵 Teste do Menu Mobile - FEEDS</h1>
+            <p>Verificação de funcionamento em dispositivos móveis</p>
+        </div>
+        
+        <div class="mobile-indicator" style="display: none;">
+            ✅ Visualização Mobile Detectada
+        </div>
+        
+        <div class="desktop-indicator" style="display: none;">
+            🖥️ Visualização Desktop Detectada
+        </div>
+        
+        <div class="device-info">
+            <strong>Informações do Dispositivo:</strong><br>
+            Largura da Tela: <span id="screenWidth"></span>px<br>
+            Altura da Tela: <span id="screenHeight"></span>px<br>
+            User Agent: <span id="userAgent"></span><br>
+            Modo: <span id="viewMode"></span>
+        </div>
+        
+        <div class="test-instructions">
+            <h3>📋 Instruções de Teste</h3>
+            <ol>
+                <li><strong>Desktop (>768px):</strong> Botão mobile não deve aparecer</li>
+                <li><strong>Mobile (≤768px):</strong> Botão mobile deve aparecer no canto inferior direito</li>
+                <li><strong>Funcionalidade:</strong> Menu deve abrir/fechar suavemente</li>
+                <li><strong>Navegação:</strong> Itens do menu devem fechar o menu ao serem clicados</li>
+            </ol>
+        </div>
+        
+        <div class="test-status" id="statusIndicator">
+            <span>Status: Aguardando teste...</span>
+            <span id="statusIcon">⏳</span>
+        </div>
+        
+        <div style="text-align: center;">
+            <button class="test-btn" onclick="window.location.href='index.html'">
+                🚀 Ir para o Sistema FEEDS
+            </button>
+            <button class="test-btn" onclick="simulateMobile()">
+                📱 Simular Mobile (DevTools)
+            </button>
+        </div>
+        
+        <div style="margin-top: 2rem; padding: 1rem; background: #f8fafc; border-radius: 8px;">
+            <h4>✅ Melhorias Implementadas no Menu Mobile:</h4>
+            <ul>
+                <li>🎨 Design mais moderno com gradientes</li>
+                <li>📱 Detecção automática de dispositivos móveis</li>
+                <li>🔄 Animações suaves de abertura/fechamento</li>
+                <li>❌ Botão de fechar com animação</li>
+                <li>🌫️ Overlay com blur para melhor foco</li>
+                <li>⌨️ Fechamento com tecla ESC</li>
+                <li>🖱️ Fechamento automático ao navegar</li>
+                <li>🔒 Bloqueio de scroll quando aberto</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        // Detectar informações do dispositivo
+        function updateDeviceInfo() {
+            document.getElementById('screenWidth').textContent = window.innerWidth;
+            document.getElementById('screenHeight').textContent = window.innerHeight;
+            document.getElementById('userAgent').textContent = navigator.userAgent.substring(0, 50) + '...';
+            
+            const isMobile = window.innerWidth <= 768;
+            document.getElementById('viewMode').textContent = isMobile ? 'Mobile' : 'Desktop';
+            
+            // Mostrar indicador apropriado
+            if (isMobile) {
+                document.querySelector('.mobile-indicator').style.display = 'block';
+                document.querySelector('.desktop-indicator').style.display = 'none';
+                updateStatus('success', '✅ Modo Mobile - Botão deve estar visível');
+            } else {
+                document.querySelector('.mobile-indicator').style.display = 'none';
+                document.querySelector('.desktop-indicator').style.display = 'block';
+                updateStatus('warning', '🖥️ Modo Desktop - Botão não deve aparecer');
+            }
+        }
+        
+        function updateStatus(type, message) {
+            const indicator = document.getElementById('statusIndicator');
+            const icon = document.getElementById('statusIcon');
+            
+            indicator.className = 'test-status ' + type;
+            indicator.querySelector('span').textContent = 'Status: ' + message;
+            icon.textContent = type === 'success' ? '✅' : '⚠️';
+        }
+        
+        function simulateMobile() {
+            alert('💡 Dica: Use as DevTools do navegador (F12) e ative o modo responsivo (Ctrl+Shift+M) para simular dispositivos móveis!');
+        }
+        
+        // Atualizar informações quando a janela for redimensionada
+        window.addEventListener('resize', updateDeviceInfo);
+        
+        // Inicializar
+        updateDeviceInfo();
+        
+        console.log('🧪 Teste do Menu Mobile FEEDS carregado!');
+        console.log('📱 Largura atual:', window.innerWidth + 'px');
+        console.log('🎯 Modo:', window.innerWidth <= 768 ? 'Mobile' : 'Desktop');
+    </script>
+</body>
+</html> 
