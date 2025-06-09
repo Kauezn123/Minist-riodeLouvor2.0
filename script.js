@@ -5936,12 +5936,10 @@ class FirebaseSyncManager {
     }
     
     getUserId() {
-        let userId = localStorage.getItem('feeds_user_id');
-        if (!userId) {
-            userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('feeds_user_id', userId);
-        }
-        return userId;
+        // ID FIXO PARA TODA A BANDA - TODOS COMPARTILHAM OS MESMOS DADOS
+        const BAND_SHARED_ID = 'ministerio_louvor_ibr_2024';
+        localStorage.setItem('feeds_user_id', BAND_SHARED_ID);
+        return BAND_SHARED_ID;
     }
     
     // Sincronização em tempo real
@@ -5962,7 +5960,7 @@ class FirebaseSyncManager {
                         loadPlaylists();
                     }
                     
-                    showInfoMessage('🔄 Playlists sincronizadas de outro dispositivo');
+                    showInfoMessage('🔄 Playlists atualizadas por outro membro da banda');
                 }
             });
             
@@ -5981,11 +5979,28 @@ class FirebaseSyncManager {
                         renderSchedules();
                     }
                     
-                    showInfoMessage('🔄 Escalas sincronizadas de outro dispositivo');
+                    showInfoMessage('🔄 Escalas atualizadas por outro membro da banda');
                 }
             });
             
             this.listeners.set('schedules', schedulesListener);
+            
+            // Listener para atividades  
+            const activitiesRef = window.firebaseRef(this.database, `data/${this.userId}/activities`);
+            const activitiesListener = window.firebaseOnValue(activitiesRef, (snapshot) => {
+                const serverData = snapshot.val();
+                if (serverData && JSON.stringify(serverData) !== JSON.stringify(AppState.activities)) {
+                    AppState.activities = serverData;
+                    localStorage.setItem('feedsActivities', JSON.stringify(serverData));
+                    
+                    // Atualizar interface se necessário
+                    updateRecentActivities();
+                    
+                    showInfoMessage('🔄 Atividades atualizadas por outro membro da banda');
+                }
+            });
+            
+            this.listeners.set('activities', activitiesListener);
             
         } catch (error) {
             console.warn('⚠️ Erro na configuração do sync em tempo real:', error);
@@ -6020,6 +6035,20 @@ class FirebaseSyncManager {
         }
     }
     
+    // Sincronizar atividades
+    async syncActivities(activities) {
+        if (!this.database || !this.isOnline || !this.isInitialized) {
+            return;
+        }
+        
+        try {
+            const activitiesRef = window.firebaseRef(this.database, `data/${this.userId}/activities`);
+            await window.firebaseSet(activitiesRef, activities);
+        } catch (error) {
+            console.warn('⚠️ Erro na sincronização das atividades:', error);
+        }
+    }
+    
     // Carregar dados do servidor
     async loadFromServer() {
         if (!this.database || !this.isOnline || !this.isInitialized) {
@@ -6041,6 +6070,11 @@ class FirebaseSyncManager {
                 if (serverData.schedules) {
                     AppState.schedules = serverData.schedules;
                     localStorage.setItem('feedsSchedules', JSON.stringify(serverData.schedules));
+                }
+                
+                if (serverData.activities) {
+                    AppState.activities = serverData.activities;
+                    localStorage.setItem('feedsActivities', JSON.stringify(serverData.activities));
                 }
                 
                 showSuccessMessage('📥 Dados carregados do Firebase');
@@ -6073,6 +6107,7 @@ class FirebaseSyncManager {
         if (this.isInitialized) {
             this.syncPlaylists(AppState.playlists);
             this.syncSchedules(AppState.schedules);
+            this.syncActivities(AppState.activities);
         }
     }
     
@@ -6105,6 +6140,7 @@ saveToLocalStorage = function() {
     if (syncManager && syncManager.isInitialized) {
         syncManager.syncPlaylists(AppState.playlists);
         syncManager.syncSchedules(AppState.schedules);
+        syncManager.syncActivities(AppState.activities);
     }
 };
 
