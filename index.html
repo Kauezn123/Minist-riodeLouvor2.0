@@ -710,8 +710,13 @@
                 <input type="hidden" id="scheduleId" name="scheduleId">
                 
                 <div class="form-group">
-                    <label>Data do Culto (ex: DOMINGO - 15/12)</label>
-                    <input type="text" name="date" id="scheduleDate" placeholder="DOMINGO - 15/12" required>
+                    <label>Data do Culto</label>
+                    <input type="date" name="dateInput" id="scheduleDateInput" required>
+                    <input type="hidden" name="date" id="scheduleDate">
+                    <div class="date-preview" id="datePreview">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Selecione uma data acima</span>
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -760,6 +765,13 @@
                 <div class="form-group">
                     <label>Baixo</label>
                     <select name="baixo" id="baixoSelect">
+                        <option value="">Selecione...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Projetor</label>
+                    <select name="projetor" id="projetorSelect">
                         <option value="">Selecione...</option>
                     </select>
                 </div>

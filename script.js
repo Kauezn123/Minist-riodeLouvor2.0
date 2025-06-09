@@ -312,8 +312,8 @@ const mockData = {
         { 
             id: 7, 
             name: 'Elo', 
-            role: 'Instrumentista/Vocal', 
-            instruments: ['Teclado', 'Vocal'],
+            role: 'Instrumentista/Vocal/Projetor', 
+            instruments: ['Teclado', 'Vocal', 'Projetor'],
             status: 'active',
             phone: '(13) 99999-1007',
             email: 'elo@email.com',
@@ -374,8 +374,8 @@ const mockData = {
         { 
             id: 14, 
             name: 'Ana', 
-            role: 'Vocal', 
-            instruments: ['Vocal'],
+            role: 'Vocal/Projetor', 
+            instruments: ['Vocal', 'Projetor'],
             status: 'active',
             phone: '(13) 99999-2006',
             email: 'ana@email.com',
@@ -394,8 +394,8 @@ const mockData = {
         { 
             id: 16, 
             name: 'Eduarda', 
-            role: 'Vocal', 
-            instruments: ['Vocal'],
+            role: 'Vocal/Projetor', 
+            instruments: ['Vocal', 'Projetor'],
             status: 'active',
             phone: '(13) 99999-2008',
             email: 'eduarda@email.com',
@@ -404,8 +404,8 @@ const mockData = {
         { 
             id: 17, 
             name: 'Flávia', 
-            role: 'Vocal', 
-            instruments: ['Vocal'],
+            role: 'Vocal/Projetor', 
+            instruments: ['Vocal', 'Projetor'],
             status: 'active',
             phone: '(13) 99999-2009',
             email: 'flavia@email.com',
@@ -444,12 +444,22 @@ const mockData = {
         { 
             id: 21, 
             name: 'Rafael', 
-            role: 'Líder Roots', 
-            instruments: [],
+            role: 'Líder Roots/Projetor', 
+            instruments: ['Projetor'],
             status: 'active',
             phone: '(13) 99999-3001',
             email: 'rafael@email.com',
             photo: 'foto/Rafa.jpeg'
+        },
+        { 
+            id: 22, 
+            name: 'Murillo', 
+            role: 'Projetor', 
+            instruments: ['Projetor'],
+            status: 'active',
+            phone: '(13) 99999-4001',
+            email: 'murillo@email.com',
+            photo: 'foto/Murillo.jpeg'
         },
     ],
     schedules: [
@@ -592,6 +602,7 @@ function loadMockData() {
     }
     AppState.members = [...mockData.members];
     console.log('✅ Membros carregados em loadMockData():', AppState.members.length);
+    console.log('🔧 Verificando se Murillo está incluído:', AppState.members.find(m => m.name === 'Murillo') ? 'SIM' : 'NÃO');
     
     const savedSongs = localStorage.getItem('feedsSongs');
     if (savedSongs) {
@@ -1358,8 +1369,9 @@ function updateMembersCount() {
     // Contar por categoria
     const vocalists = activeMembers.filter(m => m.role === 'Vocal' || m.instruments?.includes('Vocal')).length;
     const instrumentalists = activeMembers.filter(m => m.role === 'Instrumentista' || m.instruments?.some(i => i !== 'Vocal')).length;
+    const projectors = activeMembers.filter(m => m.role === 'Projetor' || m.instruments?.includes('Projetor')).length;
     if (memberDetail) {
-        memberDetail.textContent = `👥 ${vocalists} vocais, ${instrumentalists} instrumentistas`;
+        memberDetail.textContent = `👥 ${vocalists} vocais, ${instrumentalists} instrumentistas, ${projectors} projetores`;
         memberDetail.classList.add('live-data');
     }
 }
@@ -1967,6 +1979,18 @@ function createScheduleItem(schedule) {
                         </div>
                     </div>
                 </div>
+                <div class="team-section projector">
+                    <div class="section-header">
+                        <i class="fas fa-desktop"></i>
+                        <span>Projeção</span>
+                    </div>
+                    <div class="members-list">
+                        <div class="member-item ${getStatusClass(schedule.roles.projetor)}">
+                            <span class="role">Projetor:</span>
+                            <span class="name">${getDisplayValue(schedule.roles.projetor)}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
             <!-- Seção de Louvores -->
             <div class="louvores-section">
@@ -2540,6 +2564,9 @@ function openScheduleModal() {
     modal.classList.add('show');
     // Populate member selects
     populateScheduleSelects();
+    
+    // Add event listener for date input
+    setupDateInput();
 }
 // Função para verificar permissões
 function hasPermission(action) {
@@ -2572,6 +2599,16 @@ function closeScheduleModal() {
     // Limpar seleções de backvocals
     clearAllBackVocalSelections();
     updateBackVocalHiddenInput();
+    
+    // Limpar campos de data
+    const dateInput = document.getElementById('scheduleDateInput');
+    const datePreview = document.getElementById('datePreview');
+    if (dateInput) dateInput.value = '';
+    if (datePreview) {
+        datePreview.innerHTML = '<i class="fas fa-calendar-alt"></i><span>Selecione uma data acima</span>';
+        datePreview.classList.remove('populated');
+    }
+    
     currentEditingScheduleId = null;
 }
 function populateScheduleSelects() {
@@ -2582,8 +2619,9 @@ function populateScheduleSelects() {
     const tecladoSelect = document.querySelector('select[name="teclado"]');
     const bateriaSelect = document.querySelector('select[name="bateria"]');
     const baixoSelect = document.querySelector('select[name="baixo"]');
+    const projetorSelect = document.querySelector('select[name="projetor"]');
     // Clear existing options (except first)
-    [vocalSelect, violaoSelect, guitarraSelect, tecladoSelect, bateriaSelect, baixoSelect].forEach(select => {
+    [vocalSelect, violaoSelect, guitarraSelect, tecladoSelect, bateriaSelect, baixoSelect, projetorSelect].forEach(select => {
         if (select) {
             while (select.children.length > 1) {
                 select.removeChild(select.lastChild);
@@ -2647,6 +2685,14 @@ function populateScheduleSelects() {
                 option.value = member.name;
                 option.textContent = member.name;
                 baixoSelect.appendChild(option);
+            }
+        }
+        if (member.instruments.includes('Projetor') || ['Elo', 'Ana', 'Flávia', 'Eduarda', 'Murillo', 'Rafael'].includes(member.name)) {
+            if (projetorSelect) {
+                const option = document.createElement('option');
+                option.value = member.name;
+                option.textContent = member.name;
+                projetorSelect.appendChild(option);
             }
         }
     });
@@ -2765,7 +2811,8 @@ function handleScheduleSubmit(e) {
             guitarra: document.querySelector('select[name="guitarra"]').value,
             teclado: document.querySelector('select[name="teclado"]').value,
             bateria: document.querySelector('select[name="bateria"]').value,
-            baixo: document.querySelector('select[name="baixo"]').value
+            baixo: document.querySelector('select[name="baixo"]').value,
+            projetor: document.querySelector('select[name="projetor"]').value
         }
     };
     if (isEditing) {
@@ -3505,12 +3552,16 @@ function enhancedEditSchedule(scheduleId) {
     // Fill form with schedule data
     document.getElementById('scheduleId').value = schedule.id;
     document.getElementById('scheduleDate').value = schedule.date;
+    
+    // Convert existing date format back to date input if needed
+    parseExistingScheduleDate(schedule.date);
             document.getElementById('vocalPrincipal').value = schedule.roles.ministro || '';
     document.getElementById('violaoSelect').value = schedule.roles.violao || '';
     document.getElementById('guitarraSelect').value = schedule.roles.guitarra || '';
     document.getElementById('tecladoSelect').value = schedule.roles.teclado || '';
     document.getElementById('bateriaSelect').value = schedule.roles.bateria || '';
     document.getElementById('baixoSelect').value = schedule.roles.baixo || '';
+    document.getElementById('projetorSelect').value = schedule.roles.projetor || '';
     // Handle back vocal (novo seletor)
     if (schedule.roles.back_vocal) {
         setBackVocalValues(schedule.roles.back_vocal);
@@ -6836,14 +6887,96 @@ window.forceUpdateMembersDisplay = function() {
     if (memberDetail) {
         const vocalists = activeMembers.filter(m => m.role === 'Vocal' || m.instruments?.includes('Vocal')).length;
         const instrumentalists = activeMembers.filter(m => m.role === 'Instrumentista' || m.instruments?.some(i => i !== 'Vocal')).length;
-        memberDetail.textContent = `👥 ${vocalists} vocais, ${instrumentalists} instrumentistas`;
+        const projectors = activeMembers.filter(m => m.role === 'Projetor' || m.instruments?.includes('Projetor')).length;
+        memberDetail.textContent = `👥 ${vocalists} vocais, ${instrumentalists} instrumentistas, ${projectors} projetores`;
         memberDetail.classList.add('live-data');
-        console.log('✅ Detalhes atualizados:', `${vocalists} vocais, ${instrumentalists} instrumentistas`);
+        console.log('✅ Detalhes atualizados:', `${vocalists} vocais, ${instrumentalists} instrumentistas, ${projectors} projetores`);
     }
     
     console.log('🔥 ATUALIZAÇÃO FORÇADA CONCLUÍDA!');
     return activeMembers.length;
 };
+
+// === FUNÇÕES DE DATA SEMI-AUTOMÁTICA === //
+function setupDateInput() {
+    const dateInput = document.getElementById('scheduleDateInput');
+    const datePreview = document.getElementById('datePreview');
+    const hiddenDateInput = document.getElementById('scheduleDate');
+    
+    if (dateInput) {
+        dateInput.addEventListener('change', function() {
+            updateDatePreview(this.value);
+        });
+    }
+}
+
+function updateDatePreview(dateValue) {
+    const datePreview = document.getElementById('datePreview');
+    const hiddenDateInput = document.getElementById('scheduleDate');
+    
+    if (!dateValue) {
+        datePreview.innerHTML = '<i class="fas fa-calendar-alt"></i><span>Selecione uma data acima</span>';
+        datePreview.classList.remove('populated');
+        hiddenDateInput.value = '';
+        return;
+    }
+    
+    // Converter date para formato brasileiro
+    const selectedDate = new Date(dateValue + 'T12:00:00');
+    const dayOfWeek = selectedDate.getDay();
+    const day = selectedDate.getDate().toString().padStart(2, '0');
+    const month = (selectedDate.getMonth() + 1).toString().padStart(2, '0');
+    
+    // Array de dias da semana
+    const weekDays = [
+        'DOMINGO', 'SEGUNDA-FEIRA', 'TERÇA-FEIRA', 'QUARTA-FEIRA', 
+        'QUINTA-FEIRA', 'SEXTA-FEIRA', 'SÁBADO'
+    ];
+    
+    // Gerar formato final: "DOMINGO - 15/12"
+    const formattedDate = `${weekDays[dayOfWeek]} - ${day}/${month}`;
+    
+    // Atualizar preview
+    datePreview.innerHTML = `<i class="fas fa-check-circle"></i><span>${formattedDate}</span>`;
+    datePreview.classList.add('populated');
+    
+    // Atualizar campo hidden
+    hiddenDateInput.value = formattedDate;
+}
+
+function getDayName(dayIndex) {
+    const days = [
+        'DOMINGO', 'SEGUNDA-FEIRA', 'TERÇA-FEIRA', 'QUARTA-FEIRA', 
+        'QUINTA-FEIRA', 'SEXTA-FEIRA', 'SÁBADO'
+    ];
+    return days[dayIndex];
+}
+
+function parseExistingScheduleDate(dateString) {
+    // Função para converter data no formato "DOMINGO - 15/12" para date input
+    const dateInput = document.getElementById('scheduleDateInput');
+    const datePreview = document.getElementById('datePreview');
+    
+    if (!dateString || !dateInput) return;
+    
+    // Extrair dia e mês da string (ex: "DOMINGO - 15/12")
+    const dateMatch = dateString.match(/(\d{1,2})\/(\d{1,2})/);
+    if (dateMatch) {
+        const day = dateMatch[1].padStart(2, '0');
+        const month = dateMatch[2].padStart(2, '0');
+        const currentYear = new Date().getFullYear();
+        
+        // Criar formato YYYY-MM-DD para o input date
+        const inputDateValue = `${currentYear}-${month}-${day}`;
+        
+        // Preencher o input
+        dateInput.value = inputDateValue;
+        
+        // Atualizar preview
+        datePreview.innerHTML = `<i class="fas fa-check-circle"></i><span>${dateString}</span>`;
+        datePreview.classList.add('populated');
+    }
+}
 
 // Função para TESTAR se a atualização instantânea está funcionando
 window.testInstantUpdate = function() {
@@ -6875,6 +7008,253 @@ window.testInstantUpdate = function() {
     } else {
         console.warn('⚠️ FALHA! Ainda há problemas na atualização instantânea');
         showErrorMessage(`⚠️ Teste falhou: ${timeTaken}ms, mostra ${currentCount}`);
+        return false;
+    }
+};
+
+// === FUNÇÃO PARA TESTAR OS UPGRADES === //
+window.testUpgrades = function() {
+    console.log('🚀 TESTANDO UPGRADES IMPLEMENTADOS...');
+    
+    // Teste 1: Verificar se Murillo foi adicionado
+    const murillo = AppState.members.find(m => m.name === 'Murillo');
+    console.log('📋 Teste 1 - Murillo adicionado:', murillo ? '✅ SIM' : '❌ NÃO');
+    if (murillo) {
+        console.log('   - Role:', murillo.role);
+        console.log('   - Instruments:', murillo.instruments);
+    }
+    
+    // Teste 2: Verificar contagem de projetores
+    const projectors = AppState.members.filter(m => 
+        m.role === 'Projetor' || 
+        m.instruments?.includes('Projetor') ||
+        ['Elo', 'Ana', 'Flávia', 'Eduarda', 'Murillo', 'Rafael'].includes(m.name)
+    );
+    console.log('📋 Teste 2 - Membros disponíveis para Projetor:', projectors.length);
+    projectors.forEach(p => console.log(`   - ${p.name} (${p.role})`));
+    
+    // Teste 3: Verificar se campo de data existe
+    const dateInput = document.getElementById('scheduleDateInput');
+    const datePreview = document.getElementById('datePreview');
+    console.log('📋 Teste 3 - Campo de data semi-automática:', dateInput ? '✅ SIM' : '❌ NÃO');
+    console.log('📋 Teste 4 - Preview de data:', datePreview ? '✅ SIM' : '❌ NÃO');
+    
+    // Teste 5: Verificar se campo Projetor existe no formulário
+    const projetorSelect = document.getElementById('projetorSelect');
+    console.log('📋 Teste 5 - Campo Projetor no formulário:', projetorSelect ? '✅ SIM' : '❌ NÃO');
+    
+    // Resumo
+    const totalTests = 5;
+    const passedTests = [murillo, projectors.length > 0, dateInput, datePreview, projetorSelect].filter(Boolean).length;
+    
+    console.log(`🎯 RESULTADO: ${passedTests}/${totalTests} testes aprovados`);
+    
+    if (passedTests === totalTests) {
+        showSuccessMessage('🎉 Todos os upgrades funcionando perfeitamente!');
+        return true;
+    } else {
+        showErrorMessage(`⚠️ ${totalTests - passedTests} testes falharam. Verifique o console.`);
+        return false;
+    }
+};
+
+// === FUNÇÃO PARA VERIFICAR PROJETORES === //
+window.verificarProjetores = function() {
+    console.log('📽️ VERIFICANDO TODOS OS PROJETORES...');
+    
+    const projetoresEsperados = ['Elo', 'Ana', 'Flávia', 'Eduarda', 'Murillo', 'Rafael'];
+    const projetoresEncontrados = [];
+    
+    projetoresEsperados.forEach(nome => {
+        const membro = AppState.members.find(m => m.name === nome);
+        if (membro && membro.instruments.includes('Projetor')) {
+            projetoresEncontrados.push({
+                nome: membro.name,
+                role: membro.role,
+                instruments: membro.instruments
+            });
+            console.log(`✅ ${nome}: ${membro.role} - Instrumentos: [${membro.instruments.join(', ')}]`);
+        } else {
+            console.log(`❌ ${nome}: NÃO encontrado ou sem cargo de Projetor`);
+        }
+    });
+    
+    console.log(`\n📊 RESULTADO:`);
+    console.log(`📽️ Projetores encontrados: ${projetoresEncontrados.length}/${projetoresEsperados.length}`);
+    console.log(`📋 Total de membros: ${AppState.members.length}`);
+    
+    if (projetoresEncontrados.length === projetoresEsperados.length) {
+        showSuccessMessage(`🎉 Todos os ${projetoresEsperados.length} projetores foram adicionados com sucesso!`);
+        console.log('🎯 Status: TODOS OS PROJETORES CONFIGURADOS ✅');
+        return true;
+    } else {
+        showErrorMessage(`⚠️ Apenas ${projetoresEncontrados.length} de ${projetoresEsperados.length} projetores configurados`);
+        return false;
+    }
+};
+
+// === FUNÇÃO PARA DIAGNOSTICAR PROBLEMAS NO DASHBOARD === //
+window.diagnosticarDashboard = function() {
+    console.log('🔍 INICIANDO DIAGNÓSTICO COMPLETO DO DASHBOARD...');
+    
+    const problemas = [];
+    const sucessos = [];
+    
+    // 1. Verificar elemento de data/hora
+    const dateTimeElement = document.getElementById('currentDateTime');
+    if (dateTimeElement) {
+        if (dateTimeElement.textContent && dateTimeElement.textContent.trim() !== '') {
+            sucessos.push('✅ Data/Hora: funcionando (' + dateTimeElement.textContent.substring(0, 20) + '...)');
+            console.log('✅ Data/Hora elemento:', dateTimeElement.textContent);
+        } else {
+            problemas.push('❌ Data/Hora: elemento vazio');
+            console.log('❌ Data/Hora elemento encontrado mas vazio');
+            // Tentar forçar atualização
+            updateCurrentDateTime();
+        }
+    } else {
+        problemas.push('❌ Data/Hora: elemento não encontrado');
+        console.log('❌ Elemento currentDateTime não encontrado no DOM');
+    }
+    
+    // 2. Verificar contagem de membros
+    const memberCountElement = document.getElementById('activeMembersCount');
+    if (memberCountElement) {
+        if (memberCountElement.textContent && memberCountElement.textContent.trim() !== '' && memberCountElement.textContent !== 'Carregando...') {
+            sucessos.push('✅ Membros: funcionando (' + memberCountElement.textContent + ')');
+            console.log('✅ Membros:', memberCountElement.textContent);
+        } else {
+            problemas.push('❌ Membros: carregando infinito');
+            console.log('❌ Membros carregando infinito:', memberCountElement.textContent);
+        }
+    } else {
+        problemas.push('❌ Membros: elemento não encontrado');
+    }
+    
+    // 3. Verificar repertório musical
+    const songsCountElement = document.getElementById('songsCount');
+    if (songsCountElement) {
+        if (songsCountElement.textContent && songsCountElement.textContent.trim() !== '' && songsCountElement.textContent !== 'Carregando...') {
+            sucessos.push('✅ Repertório: funcionando (' + songsCountElement.textContent + ')');
+            console.log('✅ Repertório:', songsCountElement.textContent);
+        } else {
+            problemas.push('❌ Repertório: carregando infinito');
+            console.log('❌ Repertório carregando infinito:', songsCountElement.textContent);
+        }
+    } else {
+        problemas.push('❌ Repertório: elemento não encontrado');
+    }
+    
+    // 4. Verificar próximo evento
+    const nextEventElement = document.getElementById('nextEvent');
+    if (nextEventElement) {
+        if (nextEventElement.textContent && nextEventElement.textContent.trim() !== '' && nextEventElement.textContent !== 'Carregando...') {
+            sucessos.push('✅ Próximo Evento: funcionando (' + nextEventElement.textContent + ')');
+            console.log('✅ Próximo Evento:', nextEventElement.textContent);
+        } else {
+            problemas.push('❌ Próximo Evento: carregando infinito');
+            console.log('❌ Próximo Evento carregando infinito:', nextEventElement.textContent);
+        }
+    } else {
+        problemas.push('❌ Próximo Evento: elemento não encontrado');
+    }
+    
+    // 5. Verificar próxima escala
+    const nextScheduleElement = document.getElementById('nextSchedule');
+    if (nextScheduleElement) {
+        if (nextScheduleElement.textContent && nextScheduleElement.textContent.trim() !== '' && nextScheduleElement.textContent !== 'Carregando...') {
+            sucessos.push('✅ Próxima Escala: funcionando (' + nextScheduleElement.textContent + ')');
+            console.log('✅ Próxima Escala:', nextScheduleElement.textContent);
+        } else {
+            problemas.push('❌ Próxima Escala: carregando infinito');
+            console.log('❌ Próxima Escala carregando infinito:', nextScheduleElement.textContent);
+        }
+    } else {
+        problemas.push('❌ Próxima Escala: elemento não encontrado');
+    }
+    
+    // Relatório final
+    console.log('\n📊 RELATÓRIO DO DIAGNÓSTICO:');
+    console.log(`✅ Sucessos: ${sucessos.length}`);
+    sucessos.forEach(s => console.log('  ' + s));
+    console.log(`❌ Problemas: ${problemas.length}`);
+    problemas.forEach(p => console.log('  ' + p));
+    
+    if (problemas.length === 0) {
+        showSuccessMessage('🎉 Dashboard funcionando perfeitamente!');
+        return true;
+    } else {
+        showErrorMessage(`⚠️ ${problemas.length} problemas detectados no dashboard. Verifique o console.`);
+        return false;
+    }
+};
+
+// === FUNÇÃO PARA CORRIGIR PROBLEMAS DO DASHBOARD === //
+window.corrigirDashboard = function() {
+    console.log('🛠️ INICIANDO CORREÇÃO DO DASHBOARD...');
+    
+    // Forçar atualização de tudo
+    try {
+        console.log('🔄 Forçando atualização de data/hora...');
+        updateCurrentDateTime();
+        
+        console.log('🔄 Forçando atualização do dashboard...');
+        updateDashboardData();
+        
+        console.log('🔄 Forçando atualização instantânea de membros...');
+        fixMembersInstantly();
+        
+        setTimeout(() => {
+            diagnosticarDashboard();
+        }, 1000);
+        
+        showSuccessMessage('🛠️ Tentativa de correção executada!');
+        
+    } catch (error) {
+        console.error('❌ Erro durante correção:', error);
+        showErrorMessage('❌ Erro durante a correção: ' + error.message);
+    }
+};
+
+// === FUNÇÃO PARA VERIFICAR FOTOS DOS MEMBROS === //
+window.verificarFotosMembros = function() {
+    console.log('📸 VERIFICANDO FOTOS DE TODOS OS MEMBROS...');
+    
+    const membrosComFoto = [];
+    const membrosSemFoto = [];
+    
+    AppState.members.forEach(membro => {
+        if (membro.photo && membro.photo.trim() !== '') {
+            membrosComFoto.push({
+                nome: membro.name,
+                role: membro.role,
+                foto: membro.photo
+            });
+            console.log(`✅ ${membro.name}: ${membro.photo}`);
+        } else {
+            membrosSemFoto.push({
+                nome: membro.name,
+                role: membro.role
+            });
+            console.log(`❌ ${membro.name}: SEM FOTO`);
+        }
+    });
+    
+    console.log(`\n📊 RESULTADO DAS FOTOS:`);
+    console.log(`✅ Membros COM foto: ${membrosComFoto.length}`);
+    membrosComFoto.forEach(m => console.log(`   - ${m.nome}: ${m.foto}`));
+    
+    console.log(`❌ Membros SEM foto: ${membrosSemFoto.length}`);
+    membrosSemFoto.forEach(m => console.log(`   - ${m.nome} (${m.role})`));
+    
+    console.log(`📋 Total de membros: ${AppState.members.length}`);
+    
+    if (membrosSemFoto.length === 0) {
+        showSuccessMessage(`🎉 Todos os ${AppState.members.length} membros têm fotos configuradas!`);
+        console.log('🎯 Status: TODAS AS FOTOS CONFIGURADAS ✅');
+        return true;
+    } else {
+        showInfoMessage(`📸 ${membrosComFoto.length} membros com fotos, ${membrosSemFoto.length} sem fotos. Verifique o console.`);
         return false;
     }
 };
