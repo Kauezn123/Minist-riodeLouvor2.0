@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔥 Teste Firebase - FEEDS</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .status-section {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status-label {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .status-value {
+            font-family: 'Courier New', monospace;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(238, 90, 36, 0.4);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(238, 90, 36, 0.6);
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, #00b894, #00a085);
+        }
+        
+        .btn-info {
+            background: linear-gradient(45deg, #0984e3, #74b9ff);
+        }
+        
+        .log-section {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .log-item {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        .log-item:last-child {
+            border-bottom: none;
+        }
+        
+        .log-time {
+            color: #74b9ff;
+            font-weight: bold;
+        }
+        
+        .test-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .input-group {
+            margin: 15px 0;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1em;
+        }
+        
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .success { color: #00b894; }
+        .error { color: #ff6b6b; }
+        .warning { color: #fdcb6e; }
+        .info { color: #74b9ff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Teste Firebase - FEEDS</h1>
+        
+        <div class="status-section">
+            <h2>📊 Status do Sistema</h2>
+            <div class="status-item">
+                <span class="status-label">Firebase Carregado:</span>
+                <span class="status-value" id="firebaseLoaded">❌ Verificando...</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Database Conectado:</span>
+                <span class="status-value" id="databaseConnected">❌ Verificando...</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Modo Online:</span>
+                <span class="status-value" id="onlineStatus">❌ Verificando...</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">User ID:</span>
+                <span class="status-value" id="userId">⏳ Gerando...</span>
+            </div>
+        </div>
+        
+        <div class="test-controls">
+            <button class="btn btn-info" onclick="checkFirebaseStatus()">🔍 Verificar Status</button>
+            <button class="btn btn-success" onclick="testWrite()">✍️ Teste de Escrita</button>
+            <button class="btn btn-success" onclick="testRead()">📖 Teste de Leitura</button>
+            <button class="btn" onclick="clearLogs()">🗑️ Limpar Logs</button>
+        </div>
+        
+        <div class="input-group">
+            <label for="testData">📝 Dados de Teste (JSON):</label>
+            <input type="text" id="testData" placeholder='{"nome": "Teste", "data": "2024-12-01"}' value='{"teste": "Firebase funcionando!", "timestamp": "2024-12-01T10:00:00Z"}'>
+        </div>
+        
+        <div class="log-section">
+            <h3>📝 Log de Testes</h3>
+            <div id="testLogs">
+                <div class="log-item">
+                    <span class="log-time">[SISTEMA]</span> Aguardando início dos testes...
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 30px; text-align: center; opacity: 0.8; font-size: 0.9em;">
+            <p>💡 <strong>Dica:</strong> Abra o console do navegador (F12) para ver logs detalhados</p>
+            <p>🔗 Este teste verifica se o Firebase está configurado corretamente no sistema FEEDS</p>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import Firebase functions
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, set, get, onValue, off } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        // Configuração Firebase - Ministério de Louvor
+        const firebaseConfig = {
+            apiKey: "AIzaSyBYz-aJOWxvPD5BRzzPkS19FQEMfU3Ycm0",
+            authDomain: "ministeriodelouvor-46a34.firebaseapp.com",
+            databaseURL: "https://ministeriodelouvor-46a34-default-rtdb.firebaseio.com",
+            projectId: "ministeriodelouvor-46a34",
+            storageBucket: "ministeriodelouvor-46a34.firebasestorage.app",
+            messagingSenderId: "417781239555",
+            appId: "1:417781239555:web:39b8269b8a88f92b392336",
+            measurementId: "G-K19CJ2CQ13"
+        };
+
+        // Initialize Firebase
+        try {
+            const app = initializeApp(firebaseConfig);
+            const database = getDatabase(app);
+            
+            // Make Firebase functions available globally
+            window.firebaseDB = database;
+            window.firebaseRef = ref;
+            window.firebaseSet = set;
+            window.firebaseGet = get;
+            window.firebaseOnValue = onValue;
+            window.firebaseOff = off;
+            
+            log('🔥 Firebase inicializado com sucesso!', 'success');
+            updateStatus();
+            
+        } catch (error) {
+            log(`❌ Erro ao inicializar Firebase: ${error.message}`, 'error');
+            console.error('Firebase error:', error);
+        }
+    </script>
+
+    <script>
+        // Funções auxiliares
+        function log(message, type = 'info') {
+            const logs = document.getElementById('testLogs');
+            const time = new Date().toLocaleTimeString('pt-BR');
+            const logItem = document.createElement('div');
+            logItem.className = `log-item ${type}`;
+            logItem.innerHTML = `<span class="log-time">[${time}]</span> ${message}`;
+            logs.appendChild(logItem);
+            logs.scrollTop = logs.scrollHeight;
+            
+            // Also log to console
+            console.log(`[Firebase Test ${time}] ${message}`);
+        }
+        
+        function updateStatus() {
+            // Firebase Carregado
+            const firebaseLoaded = typeof window.firebaseDB !== 'undefined';
+            document.getElementById('firebaseLoaded').textContent = firebaseLoaded ? '✅ Sim' : '❌ Não';
+            
+            // Database Conectado
+            const databaseConnected = window.firebaseDB ? '✅ Sim' : '❌ Não';
+            document.getElementById('databaseConnected').textContent = databaseConnected;
+            
+            // Status Online
+            const onlineStatus = navigator.onLine ? '✅ Online' : '❌ Offline';
+            document.getElementById('onlineStatus').textContent = onlineStatus;
+            
+            // User ID
+            let userId = localStorage.getItem('feeds_user_id');
+            if (!userId) {
+                userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('feeds_user_id', userId);
+            }
+            document.getElementById('userId').textContent = userId;
+        }
+        
+        function checkFirebaseStatus() {
+            log('🔍 Verificando status do Firebase...', 'info');
+            
+            if (!window.firebaseDB) {
+                log('❌ Firebase não está carregado!', 'error');
+                return;
+            }
+            
+            log('✅ Firebase carregado corretamente', 'success');
+            log('✅ Database disponível', 'success');
+            log(`📡 Status de conexão: ${navigator.onLine ? 'Online' : 'Offline'}`, 'info');
+            
+            const userId = localStorage.getItem('feeds_user_id');
+            log(`👤 User ID: ${userId}`, 'info');
+            
+            updateStatus();
+        }
+        
+        async function testWrite() {
+            if (!window.firebaseDB) {
+                log('❌ Firebase não disponível para teste de escrita', 'error');
+                return;
+            }
+            
+            try {
+                const testDataInput = document.getElementById('testData').value;
+                const testData = JSON.parse(testDataInput);
+                const userId = localStorage.getItem('feeds_user_id');
+                
+                log('📝 Iniciando teste de escrita...', 'info');
+                
+                const testRef = window.firebaseRef(window.firebaseDB, `test/${userId}/write_test`);
+                await window.firebaseSet(testRef, {
+                    ...testData,
+                    timestamp: new Date().toISOString(),
+                    test_type: 'write_test'
+                });
+                
+                log('✅ Teste de escrita realizado com sucesso!', 'success');
+                log(`📄 Dados salvos: ${JSON.stringify(testData)}`, 'info');
+                
+            } catch (error) {
+                log(`❌ Erro no teste de escrita: ${error.message}`, 'error');
+                console.error('Write test error:', error);
+            }
+        }
+        
+        async function testRead() {
+            if (!window.firebaseDB) {
+                log('❌ Firebase não disponível para teste de leitura', 'error');
+                return;
+            }
+            
+            try {
+                const userId = localStorage.getItem('feeds_user_id');
+                
+                log('📖 Iniciando teste de leitura...', 'info');
+                
+                const testRef = window.firebaseRef(window.firebaseDB, `test/${userId}/write_test`);
+                const snapshot = await window.firebaseGet(testRef);
+                
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    log('✅ Teste de leitura realizado com sucesso!', 'success');
+                    log(`📄 Dados lidos: ${JSON.stringify(data)}`, 'info');
+                } else {
+                    log('⚠️ Nenhum dado encontrado. Execute primeiro o teste de escrita.', 'warning');
+                }
+                
+            } catch (error) {
+                log(`❌ Erro no teste de leitura: ${error.message}`, 'error');
+                console.error('Read test error:', error);
+            }
+        }
+        
+        function clearLogs() {
+            const logs = document.getElementById('testLogs');
+            logs.innerHTML = '<div class="log-item"><span class="log-time">[SISTEMA]</span> Logs limpos - aguardando novos testes...</div>';
+        }
+        
+        // Detectar mudanças de conectividade
+        window.addEventListener('online', () => {
+            log('🌐 Conexão restabelecida', 'success');
+            updateStatus();
+        });
+        
+        window.addEventListener('offline', () => {
+            log('📴 Conexão perdida - modo offline', 'warning');
+            updateStatus();
+        });
+        
+        // Inicializar página
+        document.addEventListener('DOMContentLoaded', () => {
+            log('🚀 Página de teste carregada', 'info');
+            updateStatus();
+            
+            // Aguardar Firebase carregar
+            setTimeout(() => {
+                if (window.firebaseDB) {
+                    log('🔥 Firebase detectado e pronto para testes!', 'success');
+                } else {
+                    log('⚠️ Firebase não foi carregado. Verifique a configuração.', 'warning');
+                }
+            }, 2000);
+        });
+    </script>
+</body>
+</html> 

@@ -5896,11 +5896,303 @@ function handleEventSubmit(event) {
     }
     closeEventModal();
 }
+// === SISTEMA DE SINCRONIZAÇÃO FIREBASE === //
+
+class FirebaseSyncManager {
+    constructor() {
+        this.isOnline = navigator.onLine;
+        this.userId = this.getUserId();
+        this.database = null;
+        this.listeners = new Map();
+        this.isInitialized = false;
+        
+        // Detectar mudanças de conectividade
+        window.addEventListener('online', () => this.handleOnline());
+        window.addEventListener('offline', () => this.handleOffline());
+        
+        // Aguardar Firebase estar disponível
+        this.initializeWhenReady();
+    }
+    
+    initializeWhenReady() {
+        const checkFirebase = () => {
+            if (window.firebaseDB) {
+                this.database = window.firebaseDB;
+                this.isInitialized = true;
+                this.setupRealtimeSync();
+                showSuccessMessage('🔥 Sincronização Firebase ativada!');
+            } else {
+                setTimeout(checkFirebase, 500);
+            }
+        };
+        
+        // Verificar se Firebase já está carregado ou aguardar evento
+        if (window.firebaseDB) {
+            checkFirebase();
+        } else {
+            window.addEventListener('firebaseReady', checkFirebase);
+            setTimeout(checkFirebase, 2000); // Fallback
+        }
+    }
+    
+    getUserId() {
+        let userId = localStorage.getItem('feeds_user_id');
+        if (!userId) {
+            userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('feeds_user_id', userId);
+        }
+        return userId;
+    }
+    
+    // Sincronização em tempo real
+    setupRealtimeSync() {
+        if (!this.database || !this.isInitialized) return;
+        
+        try {
+            // Listener para playlists
+            const playlistsRef = window.firebaseRef(this.database, `data/${this.userId}/playlists`);
+            const playlistsListener = window.firebaseOnValue(playlistsRef, (snapshot) => {
+                const serverData = snapshot.val();
+                if (serverData && JSON.stringify(serverData) !== JSON.stringify(AppState.playlists)) {
+                    AppState.playlists = serverData;
+                    localStorage.setItem('feedsPlaylists', JSON.stringify(serverData));
+                    
+                    // Atualizar interface se estiver na seção repertório
+                    if (AppState.currentSection === 'repertorio') {
+                        loadPlaylists();
+                    }
+                    
+                    showInfoMessage('🔄 Playlists sincronizadas de outro dispositivo');
+                }
+            });
+            
+            this.listeners.set('playlists', playlistsListener);
+            
+            // Listener para escalas
+            const schedulesRef = window.firebaseRef(this.database, `data/${this.userId}/schedules`);
+            const schedulesListener = window.firebaseOnValue(schedulesRef, (snapshot) => {
+                const serverData = snapshot.val();
+                if (serverData && JSON.stringify(serverData) !== JSON.stringify(AppState.schedules)) {
+                    AppState.schedules = serverData;
+                    localStorage.setItem('feedsSchedules', JSON.stringify(serverData));
+                    
+                    // Atualizar interface se estiver na seção escalas
+                    if (AppState.currentSection === 'schedule') {
+                        renderSchedules();
+                    }
+                    
+                    showInfoMessage('🔄 Escalas sincronizadas de outro dispositivo');
+                }
+            });
+            
+            this.listeners.set('schedules', schedulesListener);
+            
+        } catch (error) {
+            console.warn('⚠️ Erro na configuração do sync em tempo real:', error);
+        }
+    }
+    
+    // Sincronizar playlists
+    async syncPlaylists(playlists) {
+        if (!this.database || !this.isOnline || !this.isInitialized) {
+            return;
+        }
+        
+        try {
+            const playlistsRef = window.firebaseRef(this.database, `data/${this.userId}/playlists`);
+            await window.firebaseSet(playlistsRef, playlists);
+        } catch (error) {
+            console.warn('⚠️ Erro na sincronização das playlists:', error);
+        }
+    }
+    
+    // Sincronizar escalas
+    async syncSchedules(schedules) {
+        if (!this.database || !this.isOnline || !this.isInitialized) {
+            return;
+        }
+        
+        try {
+            const schedulesRef = window.firebaseRef(this.database, `data/${this.userId}/schedules`);
+            await window.firebaseSet(schedulesRef, schedules);
+        } catch (error) {
+            console.warn('⚠️ Erro na sincronização das escalas:', error);
+        }
+    }
+    
+    // Carregar dados do servidor
+    async loadFromServer() {
+        if (!this.database || !this.isOnline || !this.isInitialized) {
+            return this.loadFromLocal();
+        }
+        
+        try {
+            const dataRef = window.firebaseRef(this.database, `data/${this.userId}`);
+            const snapshot = await window.firebaseGet(dataRef);
+            const serverData = snapshot.val();
+            
+            if (serverData) {
+                // Priorizar dados do servidor se existirem
+                if (serverData.playlists) {
+                    AppState.playlists = serverData.playlists;
+                    localStorage.setItem('feedsPlaylists', JSON.stringify(serverData.playlists));
+                }
+                
+                if (serverData.schedules) {
+                    AppState.schedules = serverData.schedules;
+                    localStorage.setItem('feedsSchedules', JSON.stringify(serverData.schedules));
+                }
+                
+                showSuccessMessage('📥 Dados carregados do Firebase');
+                return serverData;
+            }
+        } catch (error) {
+            console.warn('⚠️ Erro ao carregar do servidor, usando dados locais:', error);
+        }
+        
+        return this.loadFromLocal();
+    }
+    
+    // Carregar dados locais
+    loadFromLocal() {
+        const localPlaylists = JSON.parse(localStorage.getItem('feedsPlaylists') || '{}');
+        const localSchedules = JSON.parse(localStorage.getItem('feedsSchedules') || '[]');
+        
+        return {
+            playlists: localPlaylists,
+            schedules: localSchedules
+        };
+    }
+    
+    // Evento: voltou online
+    handleOnline() {
+        this.isOnline = true;
+        showSuccessMessage('🌐 Conectado! Sincronizando dados...');
+        
+        // Sincronizar dados pendentes
+        if (this.isInitialized) {
+            this.syncPlaylists(AppState.playlists);
+            this.syncSchedules(AppState.schedules);
+        }
+    }
+    
+    // Evento: ficou offline
+    handleOffline() {
+        this.isOnline = false;
+        showInfoMessage('📴 Modo offline ativado');
+    }
+    
+    // Limpar listeners (quando necessário)
+    cleanup() {
+        this.listeners.forEach((listener, key) => {
+            const ref = window.firebaseRef(this.database, `data/${this.userId}/${key}`);
+            window.firebaseOff(ref, listener);
+        });
+        this.listeners.clear();
+    }
+}
+
+// Instanciar o gerenciador de sincronização
+let syncManager = null;
+
+// Interceptar saveToLocalStorage para adicionar sync Firebase
+const originalSaveToLocalStorage = saveToLocalStorage;
+saveToLocalStorage = function() {
+    // Executar salvamento local original
+    originalSaveToLocalStorage();
+    
+    // Sincronizar com Firebase se disponível
+    if (syncManager && syncManager.isInitialized) {
+        syncManager.syncPlaylists(AppState.playlists);
+        syncManager.syncSchedules(AppState.schedules);
+    }
+};
+
+// Interceptar loadMockData para carregar do Firebase primeiro
+const originalLoadMockData = loadMockData;
+loadMockData = async function() {
+    // Aguardar sincronização estar pronta
+    let attempts = 0;
+    while (!syncManager && attempts < 10) {
+        await new Promise(resolve => setTimeout(resolve, 300));
+        attempts++;
+    }
+    
+    // Tentar carregar do Firebase primeiro se disponível
+    if (syncManager && syncManager.isInitialized) {
+        const serverData = await syncManager.loadFromServer();
+        if (serverData && (Object.keys(serverData.playlists || {}).length > 0 || (serverData.schedules || []).length > 0)) {
+            // Se há dados no servidor, usá-los
+            if (serverData.playlists) AppState.playlists = serverData.playlists;
+            if (serverData.schedules) AppState.schedules = serverData.schedules;
+            
+            // Ainda precisamos carregar outros dados locais
+            try {
+                const savedMembers = localStorage.getItem('feedsMembers');
+                if (savedMembers) {
+                    AppState.members = JSON.parse(savedMembers);
+                } else {
+                    AppState.members = mockData.members;
+                }
+                
+                const savedSongs = localStorage.getItem('feedsSongs');
+                if (savedSongs) {
+                    AppState.songs = JSON.parse(savedSongs);
+                } else {
+                    AppState.songs = mockData.songs;
+                }
+                
+                const savedActivities = localStorage.getItem('feedsActivities');
+                if (savedActivities) {
+                    AppState.activities = JSON.parse(savedActivities);
+                } else {
+                    AppState.activities = [];
+                }
+            } catch (error) {
+                console.error('Erro ao carregar dados complementares:', error);
+            }
+            
+            return;
+        }
+    }
+    
+    // Se não há dados no Firebase ou não está disponível, executar carregamento original
+    originalLoadMockData();
+};
+
+// Função para mostrar status da sincronização
+function showSyncStatus() {
+    if (!syncManager) {
+        showInfoMessage('📴 Firebase não inicializado - funcionando offline');
+        return;
+    }
+    
+    const status = {
+        online: syncManager.isOnline,
+        initialized: syncManager.isInitialized,
+        userId: syncManager.userId,
+        listeners: syncManager.listeners.size
+    };
+    
+    const statusMsg = `🔥 Firebase Status:\n• Online: ${status.online ? '✅' : '❌'}\n• Inicializado: ${status.initialized ? '✅' : '❌'}\n• User ID: ${status.userId}\n• Listeners ativos: ${status.listeners}`;
+    
+    showInfoMessage(statusMsg);
+}
+
 // Inicializar sistema de eventos quando a página carregar
 document.addEventListener('DOMContentLoaded', function() {
     // Aguardar um pouco para garantir que tudo carregou
     setTimeout(() => {
         initializeAIChat();
         eventsSystem.init();
+        
+        // Inicializar Firebase Sync
+        if (!syncManager) {
+            syncManager = new FirebaseSyncManager();
+        }
     }, 1000);
 });
+
+// Comandos globais para debug
+window.showFirebaseStatus = showSyncStatus;
+window.syncManager = () => syncManager;
