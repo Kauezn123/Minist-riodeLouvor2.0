@@ -1,5 +1,5 @@
 // Estado global da aplicação
-const APP_VERSION = '2.1.4'; // Incrementar a cada atualização
+const APP_VERSION = '2.1.6'; // Incrementar a cada atualização - Fix Murillo playlist
 const AppState = {
     currentUser: null,
     currentSection: 'home',
@@ -243,6 +243,8 @@ const mockData = {
         { username: 'flavia', password: 'melodia987', name: 'Flávia', role: 'Vocal', level: 'member', photo: 'foto/Flavia.jpeg' },
         { username: 'dudinha', password: 'vocal2025', name: 'Dudinha', role: 'Vocal', level: 'member', photo: 'foto/Dudinha.jpeg' },
         { username: 'larissa', password: 'harmonia234', name: 'Larissa', role: 'Vocal', level: 'member', photo: 'foto/Larissa.jpeg' },
+        // === PROJETOR === //
+        { username: 'murillo', password: 'projetor2025', name: 'Murillo', role: 'Projetor', level: 'member', photo: 'foto/Murillo.jpeg' },
         // === CONTA ADMIN GERAL === //
         { username: 'admin', password: 'feeds2024!', name: 'Administrador', role: 'Administrador', level: 'admin', photo: 'foto/Admin.jpeg' }
     ],
@@ -4044,6 +4046,16 @@ function initializePlaylists() {
                 addedAt: new Date().toISOString()
             }
         ];
+        
+        AppState.playlists['murillo'] = [
+            {
+                videoId: 'adorar005',
+                title: 'Tu És Fiel - Fernandinho',
+                channel: 'Fernandinho',
+                thumbnail: 'https://img.youtube.com/vi/adorar005/mqdefault.jpg',
+                addedAt: new Date().toISOString()
+            }
+        ]; // Playlist do Murillo - Projetor
         saveToLocalStorage();
     } else {
     }
