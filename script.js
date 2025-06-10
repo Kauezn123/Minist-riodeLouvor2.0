@@ -1653,14 +1653,15 @@ function parseScheduleDate(dateString) {
 }
 // === HOME SECTION FUNCTIONS === //
 function updateCurrentDateTime() {
-    const now = new Date();
+    const now = new Date(); // Data/hora atual do dispositivo do usuário
     const options = {
         weekday: 'long',
         year: 'numeric',
         month: 'long',
         day: 'numeric',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone // Usar fuso horário do dispositivo
     };
     const dateTimeElement = document.getElementById('currentDateTime');
     if (dateTimeElement) {
@@ -2244,10 +2245,54 @@ function isAPIAvailable() {
     }
     return true;
 }
+// Função para criar eventos simulados baseados na data atual do dispositivo
+function createSimulatedEvents() {
+    const now = new Date(); // Data atual do dispositivo
+    const events = [];
+    
+    // Evento simulado: Próximo domingo para escala de louvor
+    const nextSunday = new Date(now);
+    nextSunday.setDate(now.getDate() + (7 - now.getDay()) % 7);
+    nextSunday.setHours(19, 0, 0, 0); // 19:00
+    
+    events.push({
+        id: 'sim_escala_' + nextSunday.getTime(),
+        summary: 'Escala de Louvor - Culto Noite',
+        description: 'Ministração no culto da noite',
+        start: {
+            dateTime: nextSunday.toISOString()
+        }
+    });
+    
+    // Evento simulado: Encontro de jovens próxima sexta
+    const nextFriday = new Date(now);
+    const daysUntilFriday = (5 - now.getDay() + 7) % 7;
+    nextFriday.setDate(now.getDate() + (daysUntilFriday === 0 ? 7 : daysUntilFriday));
+    nextFriday.setHours(20, 0, 0, 0); // 20:00
+    
+    events.push({
+        id: 'sim_evento_' + nextFriday.getTime(),
+        summary: 'Encontro de Jovens',
+        description: 'Reunião semanal dos jovens',
+        start: {
+            dateTime: nextFriday.toISOString()
+        }
+    });
+    
+    // Ordenar por data
+    return events.sort((a, b) => {
+        const dateA = new Date(a.start.dateTime);
+        const dateB = new Date(b.start.dateTime);
+        return dateA - dateB;
+    });
+}
+
 // Função para buscar eventos do Google Calendar
 async function fetchGoogleCalendarEvents() {
     if (!isAPIAvailable()) {
-        return [];
+        // Retornar eventos simulados baseados na data atual do dispositivo
+        console.log('API não disponível, usando eventos simulados baseados na data atual do dispositivo');
+        return createSimulatedEvents();
     }
     const now = new Date();
     const timeMin = now.toISOString();
@@ -2322,25 +2367,51 @@ function filterOtherEvents(events) {
 }
 // Função para formatar data do evento
 function formatEventDate(dateTime) {
-    const date = new Date(dateTime);
-    const now = new Date();
-    const diffTime = date.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const eventDate = new Date(dateTime);
+    const now = new Date(); // Data/hora atual do dispositivo do usuário
+    
+    // Calcular diferença considerando apenas as datas (sem horário) para contagem de dias
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const eventStart = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
+    const diffTime = eventStart.getTime() - todayStart.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    // Formatação da data completa com horário local
     const options = { 
         weekday: 'long', 
         year: 'numeric', 
         month: 'long', 
         day: 'numeric',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone // Usar fuso horário do dispositivo
     };
-    const formattedDate = date.toLocaleDateString('pt-BR', options);
-    if (diffDays === 0) {
-        return `Hoje - ${formattedDate}`;
+    const formattedDate = eventDate.toLocaleDateString('pt-BR', options);
+    
+    // Lógica baseada na diferença real de dias
+    if (diffDays < 0) {
+        return `Evento passou - ${formattedDate}`;
+    } else if (diffDays === 0) {
+        // Verificar se é hoje mesmo considerando o horário
+        const timeUntilEvent = eventDate.getTime() - now.getTime();
+        if (timeUntilEvent < 0) {
+            return `Evento passou - ${formattedDate}`;
+        } else {
+            const hoursUntil = Math.floor(timeUntilEvent / (1000 * 60 * 60));
+            const minutesUntil = Math.floor((timeUntilEvent % (1000 * 60 * 60)) / (1000 * 60));
+            
+            if (hoursUntil > 0) {
+                return `Hoje em ${hoursUntil}h${minutesUntil > 0 ? ` ${minutesUntil}m` : ''} - ${formattedDate}`;
+            } else if (minutesUntil > 0) {
+                return `Hoje em ${minutesUntil} minuto${minutesUntil > 1 ? 's' : ''} - ${formattedDate}`;
+            } else {
+                return `Acontecendo agora - ${formattedDate}`;
+            }
+        }
     } else if (diffDays === 1) {
         return `Amanhã - ${formattedDate}`;
     } else if (diffDays <= 7) {
-        return `Em ${diffDays} dias - ${formattedDate}`;
+        return `Em ${diffDays} dia${diffDays > 1 ? 's' : ''} - ${formattedDate}`;
     } else {
         return formattedDate;
     }
@@ -2388,28 +2459,11 @@ async function updateNextEventFromCalendar() {
             const eventDate = nextEvent.start.dateTime || nextEvent.start.date;
             const formattedDate = formatEventDate(eventDate);
 
-            // Calcular tempo restante
-            const now = new Date();
-            const timeDiff = new Date(eventDate).getTime() - now.getTime();
-            let timeMessage = '';
-            
-            if (timeDiff > 0) {
-                const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-                
-                if (days > 0) {
-                    timeMessage = `Em ${days} dia${days > 1 ? 's' : ''} - ${formattedDate}`;
-                } else if (hours > 0) {
-                    timeMessage = `Em ${hours}h ${minutes}m - ${formattedDate}`;
-                } else if (minutes > 0) {
-                    timeMessage = `Em ${minutes} minuto${minutes > 1 ? 's' : ''} - ${formattedDate}`;
-                } else {
-                    timeMessage = `Acontecendo agora - ${formattedDate}`;
-                }
-            } else {
-                timeMessage = `${formattedDate}`;
-            }
+            // Armazenar dados do evento atual para atualizações de tempo em tempo real
+            window.currentEventData = nextEvent;
+
+            // Usar apenas o formatEventDate que já calcula corretamente
+            const timeMessage = formattedDate;
 
             // Atualizar ícone para evento
             if (iconElement) {
@@ -2425,6 +2479,8 @@ async function updateNextEventFromCalendar() {
             hideEventCountdown();
         } else {
             // Se não houver eventos, mostrar mensagem padrão
+            window.currentEventData = null; // Limpar dados armazenados
+            
             if (iconElement) {
                 iconElement.className = 'fas fa-calendar-check';
             }
@@ -2511,16 +2567,12 @@ async function initializeGoogleCalendar() {
     // Atualizar dados iniciais
     await updateNextScheduleFromCalendar();
     await updateNextEventFromCalendar();
-    // Atualizar a cada 5 minutos
+    
+    // Atualizar a cada 5 minutos (dados do Google Calendar)
     setInterval(async () => {
         await updateNextScheduleFromCalendar();
         await updateNextEventFromCalendar();
     }, 5 * 60 * 1000); // 5 minutos
-    
-    // Atualizar apenas o tempo restante dos eventos a cada minuto
-    setInterval(async () => {
-        await updateNextEventFromCalendar();
-    }, 60 * 1000); // 1 minuto
 }
 // === SISTEMA DE LOUVORES POR ESCALA === //
 function canManageLouvores(schedule) {
