@@ -4754,15 +4754,21 @@ body {
         border-radius: 16px;
         margin-bottom: 1.5rem;
         text-align: center;
+        /* Força centralização total */
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
     }
     
     .banner-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        width: 100%;
-        max-width: none;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        width: 100% !important;
+        max-width: none !important;
+        justify-content: center !important;
+        margin: 0 auto !important;
     }
     
     .banner-content h2 {
@@ -4934,15 +4940,21 @@ body {
         border-radius: 12px;
         margin-bottom: 1rem;
         text-align: center;
+        /* Força centralização total mobile */
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
     }
     
     .banner-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        width: 100%;
-        max-width: none;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        width: 100% !important;
+        max-width: none !important;
+        justify-content: center !important;
+        margin: 0 auto !important;
     }
     
     .banner-content h2 {
