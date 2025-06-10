@@ -497,6 +497,10 @@ document.addEventListener('DOMContentLoaded', function() {
         updateDashboardData();
         console.log('✅ Dashboard atualizado imediatamente');
         
+        // FORÇAR RENDERIZAÇÃO DOS MEMBROS IMEDIATAMENTE
+        renderMembers();
+        console.log('✅ Membros renderizados imediatamente na inicialização');
+        
         // Update time every minute
         setInterval(updateCurrentDateTime, 60000);
         // Update dashboard data every 5 seconds (muito mais rápido)
@@ -2878,29 +2882,78 @@ function editSchedule(id) {
 function shareSchedule(id) {
     const schedule = AppState.schedules.find(s => s.id === id);
     if (schedule) {
-        const text = `ESCALA MINISTÉRIO DE LOUVOR - ${formatDate(schedule.date)}\n\n` +
+        // Função para formatar a data de forma mais robusta
+        const formatShareDate = (dateString) => {
+            try {
+                // Tentar diferentes formatos de data
+                let date;
+                if (dateString.includes('/')) {
+                    // Formato DD/MM/YYYY
+                    const [day, month, year] = dateString.split('/');
+                    date = new Date(year, month - 1, day);
+                } else if (dateString.includes('-')) {
+                    // Formato YYYY-MM-DD
+                    date = new Date(dateString);
+                } else {
+                    // Tentar parse direto
+                    date = new Date(dateString);
+                }
+                
+                // Verificar se a data é válida
+                if (isNaN(date.getTime())) {
+                    return dateString; // Retornar string original se não conseguir converter
+                }
+                
+                const options = { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                };
+                return date.toLocaleDateString('pt-BR', options)
+                    .replace(/^\w/, c => c.toUpperCase());
+            } catch (error) {
+                console.error('Erro ao formatar data:', error);
+                return dateString; // Retornar string original em caso de erro
+            }
+        };
+
+        const text = `ESCALA MINISTÉRIO DE LOUVOR - ${formatShareDate(schedule.date)}\n\n` +
                     `🎤 Ministro: ${schedule.roles.ministro || 'Não definido'}\n` +
                     `🎵 Back Vocal: ${schedule.roles.back_vocal.length ? schedule.roles.back_vocal.join(', ') : 'Não definido'}\n` +
                     `🎸 Violão: ${schedule.roles.violao || 'Não definido'}\n` +
                     `🎸 Guitarra: ${schedule.roles.guitarra || 'Não definido'}\n` +
                     `🎹 Teclado: ${schedule.roles.teclado || 'Não definido'}\n` +
                     `🥁 Bateria: ${schedule.roles.bateria || 'Não definido'}\n` +
-                    `🎸 Baixo: ${schedule.roles.baixo || 'Não definido'}`;
+                    `🎸 Baixo: ${schedule.roles.baixo || 'Não definido'}\n` +
+                    `🖥️ Projetor: ${schedule.roles.projetor || 'Não definido'}`;
+        
         // Registrar atividade de compartilhamento
         addActivity(
             'share',
             'Escala compartilhada',
-            `${AppState.currentUser.name} compartilhou escala de ${formatDate(schedule.date)}`,
+            `${AppState.currentUser.name} compartilhou escala de ${formatShareDate(schedule.date)}`,
             'info'
         );
+        
         if (navigator.share) {
             navigator.share({
                 title: 'Escala IBR',
                 text: text
+            }).catch(error => {
+                console.error('Erro ao compartilhar:', error);
+                // Fallback para clipboard se share API falhar
+                navigator.clipboard.writeText(text).then(() => {
+                    showSuccessMessage('Escala copiada para área de transferência!');
+                }).catch(() => {
+                    showErrorMessage('Erro ao copiar escala. Tente novamente.');
+                });
             });
         } else {
             navigator.clipboard.writeText(text).then(() => {
                 showSuccessMessage('Escala copiada para área de transferência!');
+            }).catch(() => {
+                showErrorMessage('Erro ao copiar escala. Tente novamente.');
             });
         }
     }

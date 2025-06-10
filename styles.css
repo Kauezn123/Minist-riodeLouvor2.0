@@ -6188,3 +6188,187 @@ body {
     margin-right: 8px;
     font-size: 1.1em;
 }
+
+/* === SHARE MODAL STYLES === */
+.share-modal {
+    max-width: 500px;
+    width: 90%;
+}
+
+.share-preview {
+    background: linear-gradient(135deg, #f8fafc, #f1f9ff);
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.share-preview h3 {
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.schedule-summary {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.role-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.role-icon {
+    font-size: 1.1rem;
+    width: 24px;
+    text-align: center;
+}
+
+.role-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    min-width: 80px;
+}
+
+.role-value {
+    color: var(--text-secondary);
+    flex: 1;
+}
+
+.share-options h4 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.share-option-btn {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.share-option-btn:hover {
+    border-color: var(--primary-color);
+    background: #f8fafc;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.share-option-btn i {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    width: 40px;
+    text-align: center;
+}
+
+.share-option-btn span {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.share-option-btn small {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.share-option-btn:last-child {
+    margin-bottom: 0;
+}
+
+/* === ENHANCED NOTIFICATION STYLES === */
+.notification {
+    animation: slideInRight 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.notification.success {
+    background: linear-gradient(135deg, #10B981, #059669);
+}
+
+.notification.error {
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+}
+
+.notification.info {
+    background: linear-gradient(135deg, #3B82F6, #2563EB);
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%) scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%) scale(0.8);
+    }
+}
+
+/* === MOBILE SHARE STYLES === */
+@media (max-width: 768px) {
+    .share-modal {
+        width: 95%;
+        max-width: none;
+    }
+    
+    .share-preview {
+        padding: 1rem;
+    }
+    
+    .role-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        text-align: left;
+    }
+    
+    .role-name {
+        min-width: auto;
+        font-size: 0.9rem;
+    }
+    
+    .share-option-btn {
+        padding: 0.75rem;
+        gap: 0.75rem;
+    }
+    
+    .share-option-btn i {
+        font-size: 1.25rem;
+        width: 32px;
+    }
+    
+    .share-option-btn span {
+        font-size: 0.95rem;
+    }
+    
+    .share-option-btn small {
+        font-size: 0.8rem;
+    }
+}
