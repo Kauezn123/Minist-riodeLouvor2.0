@@ -1,5 +1,5 @@
 // Estado global da aplicação
-const APP_VERSION = '2.1.4'; // Incrementar a cada atualização
+const APP_VERSION = '2.1.5'; // Incrementar a cada atualização
 const AppState = {
     currentUser: null,
     currentSection: 'home',
@@ -4055,7 +4055,7 @@ function initializePlaylists() {
                 thumbnail: 'https://img.youtube.com/vi/adorar005/mqdefault.jpg',
                 addedAt: new Date().toISOString()
             }
-        ];
+        ]; // Playlist do Murillo - Projetor
         saveToLocalStorage();
     } else {
     }
