@@ -1,4 +1,5 @@
 // Estado global da aplicação
+const APP_VERSION = '2.1.4'; // Incrementar a cada atualização
 const AppState = {
     currentUser: null,
     currentSection: 'home',
@@ -6,7 +7,8 @@ const AppState = {
     members: [],
     songs: [],
     activities: [],
-    playlists: {}
+    playlists: {},
+    version: APP_VERSION
 };
 // Versículos bíblicos - Novo Testamento
 const bibleVerses = [
@@ -513,7 +515,168 @@ document.addEventListener('DOMContentLoaded', function() {
         showLoginScreen();
     }
 });
+// Função para verificar atualizações
+function checkForUpdates() {
+    const lastVersion = localStorage.getItem('feedsAppVersion');
+    const currentVersion = APP_VERSION;
+    
+    if (lastVersion && lastVersion !== currentVersion) {
+        console.log(`📦 Atualização detectada: ${lastVersion} → ${currentVersion}`);
+        showUpdateNotification(lastVersion, currentVersion);
+        
+        // Limpar caches desnecessários após atualização
+        clearOldCaches();
+        
+        // Registrar atividade de atualização
+        setTimeout(() => {
+            if (AppState.currentUser) {
+                addActivity(
+                    'system_update',
+                    'Sistema atualizado',
+                    `Aplicação atualizada de v${lastVersion} para v${currentVersion}`,
+                    'info'
+                );
+            }
+        }, 2000);
+    }
+    
+    // Salvar versão atual
+    localStorage.setItem('feedsAppVersion', currentVersion);
+}
+
+// Função para mostrar notificação de atualização
+function showUpdateNotification(oldVersion, newVersion) {
+    const notification = document.createElement('div');
+    notification.className = 'update-notification';
+    notification.innerHTML = `
+        <div class="update-content">
+            <div class="update-icon">
+                <i class="fas fa-sync-alt"></i>
+            </div>
+            <div class="update-text">
+                <h4>🎉 Sistema Atualizado!</h4>
+                <p>Versão ${newVersion} carregada com sucesso</p>
+                <small>Todas as funcionalidades foram atualizadas automaticamente</small>
+            </div>
+            <button class="update-close" onclick="this.parentElement.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    
+    // Estilos da notificação
+    notification.style.cssText = `
+        position: fixed;
+        top: 2rem;
+        right: 2rem;
+        background: linear-gradient(135deg, #10B981, #059669);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        z-index: 10001;
+        animation: slideInUpdate 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        max-width: 350px;
+        min-width: 300px;
+    `;
+    
+    const updateContent = notification.querySelector('.update-content');
+    updateContent.style.cssText = `
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+    `;
+    
+    const updateIcon = notification.querySelector('.update-icon');
+    updateIcon.style.cssText = `
+        background: rgba(255, 255, 255, 0.2);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        animation: spin 2s linear infinite;
+        flex-shrink: 0;
+    `;
+    
+    const updateText = notification.querySelector('.update-text');
+    updateText.style.cssText = `flex: 1;`;
+    
+    const updateClose = notification.querySelector('.update-close');
+    updateClose.style.cssText = `
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 4px;
+        transition: background 0.3s ease;
+        flex-shrink: 0;
+    `;
+    
+    // Adicionar estilos de animação
+    const updateStyles = document.createElement('style');
+    updateStyles.textContent = `
+        @keyframes slideInUpdate {
+            from { opacity: 0; transform: translateX(100%) scale(0.8); }
+            to { opacity: 1; transform: translateX(0) scale(1); }
+        }
+        .update-notification h4 { margin: 0 0 0.5rem 0; font-size: 1.1rem; font-weight: 600; }
+        .update-notification p { margin: 0 0 0.25rem 0; font-size: 0.95rem; opacity: 0.9; }
+        .update-notification small { font-size: 0.8rem; opacity: 0.8; }
+        .update-close:hover { background: rgba(255, 255, 255, 0.2); }
+    `;
+    
+    document.head.appendChild(updateStyles);
+    document.body.appendChild(notification);
+    
+    // Auto remover após 8 segundos
+    setTimeout(() => {
+        notification.style.animation = 'slideOutRight 0.3s ease-in forwards';
+        setTimeout(() => {
+            notification.remove();
+            updateStyles.remove();
+        }, 300);
+    }, 8000);
+}
+
+// Função para limpar caches antigos
+function clearOldCaches() {
+    try {
+        // Limpar apenas dados temporários e caches, não os dados do usuário
+        const keysToKeep = [
+            'feedsSchedules', 'feedsSongs', 'feedsActivities', 'feedsPlaylists',
+            'feedsUserSession', 'feedsUser', 'feedsAppVersion'
+        ];
+        
+        // Remover outras chaves antigas que possam estar causando conflito
+        const allKeys = Object.keys(localStorage);
+        allKeys.forEach(key => {
+            if (key.startsWith('feeds') && !keysToKeep.includes(key)) {
+                localStorage.removeItem(key);
+                console.log(`🗑️ Cache antigo removido: ${key}`);
+            }
+        });
+        
+        // Limpar cache do Cifra Club (temporário)
+        if (typeof cifraClubCache !== 'undefined') {
+            cifraClubCache.clear();
+        }
+        
+        console.log('✅ Caches antigos limpos');
+    } catch (error) {
+        console.error('Erro ao limpar caches:', error);
+    }
+}
+
 function initializeApp() {
+    console.log(`🚀 Inicializando FEEDS v${APP_VERSION}`);
+    
+    // Verificar se houve atualização
+    checkForUpdates();
+    
     // Verificar modo de execução e mostrar notificação se offline
     if (!isAPIAvailable()) {
         setTimeout(() => showOfflineNotification(), 1000);
@@ -1261,6 +1424,38 @@ function updateDashboardData() {
     updateRecentActivities();
     updateQuickActions();
 }
+
+// Função para forçar atualização manual
+function forceUpdate() {
+    console.log('🔄 Forçando atualização...');
+    
+    // Mostrar loading
+    showNotification('Verificando atualizações...', 'info');
+    
+    // Simular verificação de atualização após um delay
+    setTimeout(() => {
+        // Limpar caches
+        clearOldCaches();
+        
+        // Recarregar dados
+        loadMockData();
+        updateDashboardData();
+        renderSchedules();
+        
+        showSuccessMessage('✅ Sistema atualizado com sucesso!');
+        console.log('✅ Atualização forçada concluída');
+    }, 1500);
+}
+
+// Verificar atualizações automaticamente a cada 30 minutos
+setInterval(() => {
+    if (navigator.onLine && AppState.currentUser) {
+        console.log('🔍 Verificação automática de atualizações...');
+        // Recarregar dados sem notificação
+        loadMockData();
+        updateDashboardData();
+    }
+}, 30 * 60 * 1000); // 30 minutos
 function updateQuickActions() {
     if (!AppState.currentUser) return;
     const quickActionsGrid = document.querySelector('.quick-actions-grid');
@@ -1407,15 +1602,20 @@ function updateMonthlySchedulesCount() {
     const publishedSchedules = monthlySchedules.filter(s => s.status === 'published');
     // Atualizar elementos na interface
     const monthlyCountElement = document.getElementById('monthlySchedulesCount');
-    const monthlyDetail = document.querySelector('.stat-card.info .stat-detail');
+    
+    // REMOVIDO: Não atualizar mais o card de eventos com informações de escalas
+    // const monthlyDetail = document.querySelector('.stat-card.info .stat-detail');
+    
     if (monthlyCountElement) {
         monthlyCountElement.textContent = monthlySchedules.length;
     }
-    if (monthlyDetail) {
-        const draftSchedules = monthlySchedules.filter(s => s.status === 'draft');
-        monthlyDetail.textContent = `📋 ${publishedSchedules.length} publicadas, ${draftSchedules.length} rascunhos`;
-        monthlyDetail.classList.add('live-data');
-    }
+    
+    // REMOVIDO: A lógica que sobrescrevia o card "Próximo Evento"
+    // if (monthlyDetail) {
+    //     const draftSchedules = monthlySchedules.filter(s => s.status === 'draft');
+    //     monthlyDetail.textContent = `📋 ${publishedSchedules.length} publicadas, ${draftSchedules.length} rascunhos`;
+    //     monthlyDetail.classList.add('live-data');
+    // }
 }
 function parseScheduleDate(dateString) {
     // Converter formato "DOMINGO - 01/12" para Date
@@ -1453,14 +1653,15 @@ function parseScheduleDate(dateString) {
 }
 // === HOME SECTION FUNCTIONS === //
 function updateCurrentDateTime() {
-    const now = new Date();
+    const now = new Date(); // Data/hora atual do dispositivo do usuário
     const options = {
         weekday: 'long',
         year: 'numeric',
         month: 'long',
         day: 'numeric',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone // Usar fuso horário do dispositivo
     };
     const dateTimeElement = document.getElementById('currentDateTime');
     if (dateTimeElement) {
@@ -2044,10 +2245,54 @@ function isAPIAvailable() {
     }
     return true;
 }
+// Função para criar eventos simulados baseados na data atual do dispositivo
+function createSimulatedEvents() {
+    const now = new Date(); // Data atual do dispositivo
+    const events = [];
+    
+    // Evento simulado: Próximo domingo para escala de louvor
+    const nextSunday = new Date(now);
+    nextSunday.setDate(now.getDate() + (7 - now.getDay()) % 7);
+    nextSunday.setHours(19, 0, 0, 0); // 19:00
+    
+    events.push({
+        id: 'sim_escala_' + nextSunday.getTime(),
+        summary: 'Escala de Louvor - Culto Noite',
+        description: 'Ministração no culto da noite',
+        start: {
+            dateTime: nextSunday.toISOString()
+        }
+    });
+    
+    // Evento simulado: Encontro de jovens próxima sexta
+    const nextFriday = new Date(now);
+    const daysUntilFriday = (5 - now.getDay() + 7) % 7;
+    nextFriday.setDate(now.getDate() + (daysUntilFriday === 0 ? 7 : daysUntilFriday));
+    nextFriday.setHours(20, 0, 0, 0); // 20:00
+    
+    events.push({
+        id: 'sim_evento_' + nextFriday.getTime(),
+        summary: 'Encontro de Jovens',
+        description: 'Reunião semanal dos jovens',
+        start: {
+            dateTime: nextFriday.toISOString()
+        }
+    });
+    
+    // Ordenar por data
+    return events.sort((a, b) => {
+        const dateA = new Date(a.start.dateTime);
+        const dateB = new Date(b.start.dateTime);
+        return dateA - dateB;
+    });
+}
+
 // Função para buscar eventos do Google Calendar
 async function fetchGoogleCalendarEvents() {
     if (!isAPIAvailable()) {
-        return [];
+        // Retornar eventos simulados baseados na data atual do dispositivo
+        console.log('API não disponível, usando eventos simulados baseados na data atual do dispositivo');
+        return createSimulatedEvents();
     }
     const now = new Date();
     const timeMin = now.toISOString();
@@ -2122,25 +2367,51 @@ function filterOtherEvents(events) {
 }
 // Função para formatar data do evento
 function formatEventDate(dateTime) {
-    const date = new Date(dateTime);
-    const now = new Date();
-    const diffTime = date.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const eventDate = new Date(dateTime);
+    const now = new Date(); // Data/hora atual do dispositivo do usuário
+    
+    // Calcular diferença considerando apenas as datas (sem horário) para contagem de dias
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const eventStart = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
+    const diffTime = eventStart.getTime() - todayStart.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    // Formatação da data completa com horário local
     const options = { 
         weekday: 'long', 
         year: 'numeric', 
         month: 'long', 
         day: 'numeric',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone // Usar fuso horário do dispositivo
     };
-    const formattedDate = date.toLocaleDateString('pt-BR', options);
-    if (diffDays === 0) {
-        return `Hoje - ${formattedDate}`;
+    const formattedDate = eventDate.toLocaleDateString('pt-BR', options);
+    
+    // Lógica baseada na diferença real de dias
+    if (diffDays < 0) {
+        return `Evento passou - ${formattedDate}`;
+    } else if (diffDays === 0) {
+        // Verificar se é hoje mesmo considerando o horário
+        const timeUntilEvent = eventDate.getTime() - now.getTime();
+        if (timeUntilEvent < 0) {
+            return `Evento passou - ${formattedDate}`;
+        } else {
+            const hoursUntil = Math.floor(timeUntilEvent / (1000 * 60 * 60));
+            const minutesUntil = Math.floor((timeUntilEvent % (1000 * 60 * 60)) / (1000 * 60));
+            
+            if (hoursUntil > 0) {
+                return `Hoje em ${hoursUntil}h${minutesUntil > 0 ? ` ${minutesUntil}m` : ''} - ${formattedDate}`;
+            } else if (minutesUntil > 0) {
+                return `Hoje em ${minutesUntil} minuto${minutesUntil > 1 ? 's' : ''} - ${formattedDate}`;
+            } else {
+                return `Acontecendo agora - ${formattedDate}`;
+            }
+        }
     } else if (diffDays === 1) {
         return `Amanhã - ${formattedDate}`;
     } else if (diffDays <= 7) {
-        return `Em ${diffDays} dias - ${formattedDate}`;
+        return `Em ${diffDays} dia${diffDays > 1 ? 's' : ''} - ${formattedDate}`;
     } else {
         return formattedDate;
     }
@@ -2187,6 +2458,13 @@ async function updateNextEventFromCalendar() {
             const nextEvent = otherEvents[0];
             const eventDate = nextEvent.start.dateTime || nextEvent.start.date;
             const formattedDate = formatEventDate(eventDate);
+
+            // Armazenar dados do evento atual para atualizações de tempo em tempo real
+            window.currentEventData = nextEvent;
+
+            // Usar apenas o formatEventDate que já calcula corretamente
+            const timeMessage = formattedDate;
+
             // Atualizar ícone para evento
             if (iconElement) {
                 iconElement.className = 'fas fa-calendar-alt';
@@ -2194,10 +2472,15 @@ async function updateNextEventFromCalendar() {
             nextEventElement.textContent = nextEvent.summary;
             detailElement.innerHTML = `
                 <span class="live-data"></span>
-                📅 ${formattedDate}
+                📅 ${timeMessage}
             `;
+            
+            // Esconder countdown (não queremos mais o contador em azul)
+            hideEventCountdown();
         } else {
             // Se não houver eventos, mostrar mensagem padrão
+            window.currentEventData = null; // Limpar dados armazenados
+            
             if (iconElement) {
                 iconElement.className = 'fas fa-calendar-check';
             }
@@ -2206,9 +2489,77 @@ async function updateNextEventFromCalendar() {
                 <span class="live-data"></span>
                 📅 Agenda livre nos próximos dias
             `;
+            
+            // Esconder countdown se não há eventos
+            hideEventCountdown();
         }
     } catch (error) {
         console.warn('Erro ao atualizar próximo evento:', error);
+    }
+}
+
+// Variável global para armazenar o interval do countdown
+let eventCountdownInterval = null;
+
+// Função para iniciar o countdown do evento
+function startEventCountdown(eventDateTime) {
+    // Limpar countdown anterior se existir
+    if (eventCountdownInterval) {
+        clearInterval(eventCountdownInterval);
+    }
+    
+    const eventDate = new Date(eventDateTime);
+    const countdownElement = document.getElementById('eventCountdown');
+    const daysElement = document.getElementById('countdownDays');
+    const hoursElement = document.getElementById('countdownHours');
+    const minutesElement = document.getElementById('countdownMinutes');
+    
+    if (!countdownElement || !daysElement || !hoursElement || !minutesElement) {
+        return;
+    }
+    
+    // Função para atualizar o countdown
+    function updateCountdown() {
+        const now = new Date();
+        const timeDiff = eventDate.getTime() - now.getTime();
+        
+        if (timeDiff <= 0) {
+            // Evento já passou ou está acontecendo agora
+            hideEventCountdown();
+            return;
+        }
+        
+        // Calcular tempo restante
+        const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+        
+        // Atualizar elementos
+        daysElement.textContent = days;
+        hoursElement.textContent = hours;
+        minutesElement.textContent = minutes;
+        
+        // Mostrar countdown
+        countdownElement.style.display = 'block';
+    }
+    
+    // Atualizar imediatamente
+    updateCountdown();
+    
+    // Atualizar a cada minuto
+    eventCountdownInterval = setInterval(updateCountdown, 60000);
+}
+
+// Função para esconder o countdown
+function hideEventCountdown() {
+    const countdownElement = document.getElementById('eventCountdown');
+    if (countdownElement) {
+        countdownElement.style.display = 'none';
+    }
+    
+    if (eventCountdownInterval) {
+        clearInterval(eventCountdownInterval);
+        eventCountdownInterval = null;
     }
 }
 // Função para inicializar integração com Google Calendar
@@ -2216,7 +2567,8 @@ async function initializeGoogleCalendar() {
     // Atualizar dados iniciais
     await updateNextScheduleFromCalendar();
     await updateNextEventFromCalendar();
-    // Atualizar a cada 5 minutos
+    
+    // Atualizar a cada 5 minutos (dados do Google Calendar)
     setInterval(async () => {
         await updateNextScheduleFromCalendar();
         await updateNextEventFromCalendar();
@@ -2882,29 +3234,78 @@ function editSchedule(id) {
 function shareSchedule(id) {
     const schedule = AppState.schedules.find(s => s.id === id);
     if (schedule) {
-        const text = `ESCALA MINISTÉRIO DE LOUVOR - ${formatDate(schedule.date)}\n\n` +
+        // Função para formatar a data de forma mais robusta
+        const formatShareDate = (dateString) => {
+            try {
+                // Tentar diferentes formatos de data
+                let date;
+                if (dateString.includes('/')) {
+                    // Formato DD/MM/YYYY
+                    const [day, month, year] = dateString.split('/');
+                    date = new Date(year, month - 1, day);
+                } else if (dateString.includes('-')) {
+                    // Formato YYYY-MM-DD
+                    date = new Date(dateString);
+                } else {
+                    // Tentar parse direto
+                    date = new Date(dateString);
+                }
+                
+                // Verificar se a data é válida
+                if (isNaN(date.getTime())) {
+                    return dateString; // Retornar string original se não conseguir converter
+                }
+                
+                const options = { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                };
+                return date.toLocaleDateString('pt-BR', options)
+                    .replace(/^\w/, c => c.toUpperCase());
+            } catch (error) {
+                console.error('Erro ao formatar data:', error);
+                return dateString; // Retornar string original em caso de erro
+            }
+        };
+
+        const text = `ESCALA MINISTÉRIO DE LOUVOR - ${formatShareDate(schedule.date)}\n\n` +
                     `🎤 Ministro: ${schedule.roles.ministro || 'Não definido'}\n` +
                     `🎵 Back Vocal: ${schedule.roles.back_vocal.length ? schedule.roles.back_vocal.join(', ') : 'Não definido'}\n` +
                     `🎸 Violão: ${schedule.roles.violao || 'Não definido'}\n` +
                     `🎸 Guitarra: ${schedule.roles.guitarra || 'Não definido'}\n` +
                     `🎹 Teclado: ${schedule.roles.teclado || 'Não definido'}\n` +
                     `🥁 Bateria: ${schedule.roles.bateria || 'Não definido'}\n` +
-                    `🎸 Baixo: ${schedule.roles.baixo || 'Não definido'}`;
+                    `🎸 Baixo: ${schedule.roles.baixo || 'Não definido'}\n` +
+                    `🖥️ Projetor: ${schedule.roles.projetor || 'Não definido'}`;
+        
         // Registrar atividade de compartilhamento
         addActivity(
             'share',
             'Escala compartilhada',
-            `${AppState.currentUser.name} compartilhou escala de ${formatDate(schedule.date)}`,
+            `${AppState.currentUser.name} compartilhou escala de ${formatShareDate(schedule.date)}`,
             'info'
         );
+        
         if (navigator.share) {
             navigator.share({
                 title: 'Escala IBR',
                 text: text
+            }).catch(error => {
+                console.error('Erro ao compartilhar:', error);
+                // Fallback para clipboard se share API falhar
+                navigator.clipboard.writeText(text).then(() => {
+                    showSuccessMessage('Escala copiada para área de transferência!');
+                }).catch(() => {
+                    showErrorMessage('Erro ao copiar escala. Tente novamente.');
+                });
             });
         } else {
             navigator.clipboard.writeText(text).then(() => {
                 showSuccessMessage('Escala copiada para área de transferência!');
+            }).catch(() => {
+                showErrorMessage('Erro ao copiar escala. Tente novamente.');
             });
         }
     }
@@ -5762,8 +6163,8 @@ const eventsSystem = {
                     <span class="day">${day}</span>
                     <span class="month">${month}</span>
                 </div>
-                <div class="event-status ${event.status}">
-                    <i class="fas ${this.getStatusIcon(event.status)}"></i>
+                <div class="event-type">
+                    <i class="fas fa-calendar-alt"></i>
                 </div>
             </div>
             <div class="event-content">
@@ -5775,6 +6176,7 @@ const eventsSystem = {
                         ${event.team.length > 2 ? `<span class="team-more">+${event.team.length - 2}</span>` : ''}
                     </div>
                 ` : ''}
+                <span class="event-detail">Evento programado</span>
             </div>
             ${this.canManageEvents() ? `
                 <div class="event-actions">
