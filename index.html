@@ -441,10 +441,16 @@
                         <select id="monthFilter" class="month-selector">
                             <option value="">Todos os meses</option>
                         </select>
-                        <button class="btn-primary" onclick="openScheduleModal()">
-                            <i class="fas fa-plus"></i>
-                            Nova Escala
-                        </button>
+                        <div class="schedule-actions">
+                            <button class="btn-danger-outline" id="deleteAllSchedulesBtn" onclick="showDeleteAllSchedulesConfirmation()" style="display: none;">
+                                <i class="fas fa-trash-alt"></i>
+                                Apagar Escalas
+                            </button>
+                            <button class="btn-primary" onclick="openScheduleModal()">
+                                <i class="fas fa-plus"></i>
+                                Nova Escala
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -681,6 +687,40 @@
                     </div>
                 </div>
                 
+                <div id="rehearsalSection" class="rehearsal-section">
+                    <div class="form-group">
+                        <label>Dia do Ensaio</label>
+                        <div class="rehearsal-days">
+                            <label class="rehearsal-day-option">
+                                <input type="radio" name="rehearsalDay" value="Quarta-feira">
+                                <span>Quarta-feira</span>
+                            </label>
+                            <label class="rehearsal-day-option">
+                                <input type="radio" name="rehearsalDay" value="Quinta-feira">
+                                <span>Quinta-feira</span>
+                            </label>
+                            <label class="rehearsal-day-option">
+                                <input type="radio" name="rehearsalDay" value="Sábado">
+                                <span>Sábado</span>
+                            </label>
+                            <label class="rehearsal-day-option">
+                                <input type="radio" name="rehearsalDay" value="Domingo">
+                                <span>Domingo</span>
+                            </label>
+                            <label class="rehearsal-day-option">
+                                <input type="radio" name="rehearsalDay" value="outro" id="otherDayOption">
+                                <span>Outro dia</span>
+                            </label>
+                        </div>
+                        <input type="text" id="customDayInput" name="customRehearsalDay" placeholder="Digite o dia da semana..." style="display: none; margin-top: 10px;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Horário do Ensaio</label>
+                        <input type="time" name="rehearsalTime" id="rehearsalTimeInput">
+                    </div>
+                </div>
+                
                 <div class="form-group">
                     <label>Ministro</label>
                     <select name="ministro" id="vocalPrincipal" required>
@@ -773,6 +813,53 @@
                     <button type="button" class="btn-danger" onclick="confirmDeleteSchedule()">
                         <i class="fas fa-trash"></i>
                         Excluir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Delete All Schedules Modal -->
+    <div id="confirmDeleteAllSchedulesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-exclamation-triangle"></i> Atenção: Exclusão Total</h3>
+                <button class="modal-close" onclick="closeDeleteAllSchedulesModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-form">
+                <div class="confirm-message danger-zone">
+                    <div class="warning-icon">
+                        <i class="fas fa-radiation-alt"></i>
+                    </div>
+                    <div class="warning-content">
+                        <h4>🔥 ZONA DE PERIGO</h4>
+                        <p><strong>Você está prestes a apagar TODAS as escalas!</strong></p>
+                        <p>Esta ação:</p>
+                        <ul>
+                            <li>❌ Removerá todas as escalas do sistema</li>
+                            <li>❌ Não pode ser desfeita</li>
+                            <li>❌ Apagará todos os dados de ensaios</li>
+                            <li>❌ Removerá todos os louvores associados</li>
+                        </ul>
+                        <p class="danger-text">⚠️ Tem ABSOLUTA certeza desta ação?</p>
+                    </div>
+                </div>
+                
+                <div class="confirmation-input">
+                    <label for="confirmationText">Para confirmar, digite <strong>"APAGAR TUDO"</strong>:</label>
+                    <input type="text" id="confirmationText" placeholder="Digite: apagar tudo (maiúsculo ou minúsculo)" maxlength="11">
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeDeleteAllSchedulesModal()">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn-danger-critical" id="confirmDeleteAllBtn" onclick="confirmDeleteAllSchedules()" disabled>
+                        <i class="fas fa-nuclear"></i>
+                        APAGAR TODAS AS ESCALAS
                     </button>
                 </div>
             </div>

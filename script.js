@@ -1,5 +1,5 @@
 // Estado global da aplicação
-const APP_VERSION = '2.1.6'; // Incrementar a cada atualização - Fix Murillo playlist
+const APP_VERSION = '2.1.5'; // Incrementar a cada atualização
 const AppState = {
     currentUser: null,
     currentSection: 'home',
@@ -467,7 +467,70 @@ const mockData = {
         },
     ],
     schedules: [
-        // Sistema iniciará sem escalas - os líderes criarão as escalas reais aqui
+        // Escalas restauradas
+        {
+            id: 1,
+            date: 'QUARTA-FEIRA - 11/06',
+            status: 'published',
+            roles: {
+                ministro: 'Elo',
+                back_vocal: ['Fernando', 'Ane', 'Flávia'],
+                violao: 'Vitória',
+                guitarra: 'Daniel',
+                teclado: 'Fernando',
+                bateria: 'Kauê',
+                baixo: 'Juninho',
+                projetor: 'Murillo'
+            },
+            rehearsal: {
+                day: 'Quarta-feira',
+                time: '19:00'
+            },
+            louvores: [],
+            lastEdited: new Date().toISOString()
+        },
+        {
+            id: 2,
+            date: 'SÁBADO - 14/06',
+            status: 'published',
+            roles: {
+                ministro: 'Ana',
+                back_vocal: ['Ane', 'Eduarda', 'Dudinha'],
+                violao: 'Vitória',
+                guitarra: 'Daniel',
+                teclado: 'Elo',
+                bateria: 'Luma',
+                baixo: 'Não definido',
+                projetor: 'Flávia'
+            },
+            rehearsal: {
+                day: 'Quarta-feira',
+                time: '19:00'
+            },
+            louvores: [],
+            lastEdited: new Date().toISOString()
+        },
+        {
+            id: 3,
+            date: 'DOMINGO - 15/06',
+            status: 'published',
+            roles: {
+                ministro: 'Kerbelin',
+                back_vocal: ['Elo', 'Stephanie', 'Larissa', 'Thiago (Tio chico)'],
+                violao: 'Vitória',
+                guitarra: 'Daniel',
+                teclado: 'Fernando',
+                bateria: 'Dudu',
+                baixo: 'Juninho',
+                projetor: 'Ana'
+            },
+            rehearsal: {
+                day: 'Quarta-feira',
+                time: '19:00'
+            },
+            louvores: [],
+            lastEdited: new Date().toISOString()
+        }
     ],
     songs: [
         { id: 1, title: 'Águas Purificadoras', artist: 'Diante do Trono', key: 'G', bpm: 72 },
@@ -1233,6 +1296,8 @@ function navigateToSection(sectionName) {
 // Função para atualizar permissões da seção de escalas
 function updateSchedulePermissions() {
     const newScheduleBtn = document.querySelector('#scheduleSection .btn-primary');
+    const deleteAllBtn = document.getElementById('deleteAllSchedulesBtn');
+    
     if (newScheduleBtn) {
         if (hasPermission('create_schedule')) {
             newScheduleBtn.style.display = 'flex';
@@ -1240,6 +1305,16 @@ function updateSchedulePermissions() {
             newScheduleBtn.style.display = 'none';
         }
     }
+    
+    // Mostrar botão "Apagar Escalas" apenas para admin, pastor e líder
+    if (deleteAllBtn) {
+        if (hasPermission('delete_all_schedules')) {
+            deleteAllBtn.style.display = 'flex';
+        } else {
+            deleteAllBtn.style.display = 'none';
+        }
+    }
+    
     // Atualizar permissões de eventos também
     if (typeof eventsSystem !== 'undefined') {
         eventsSystem.updateEventPermissions();
@@ -2198,6 +2273,15 @@ function createScheduleItem(schedule) {
                         </div>
                     </div>
                 </div>
+                <div class="team-section rehearsal">
+                    <div class="section-header">
+                        <i class="fas fa-calendar-week"></i>
+                        <span>Ensaio</span>
+                    </div>
+                    <div class="members-list">
+                        ${getRehearsalDisplay(schedule.rehearsal)}
+                    </div>
+                </div>
             </div>
             <!-- Seção de Louvores -->
             <div class="louvores-section">
@@ -2885,6 +2969,38 @@ function getBackVocalDisplayValue(backVocalArray) {
     if (backVocalArray.length === 1 && backVocalArray[0] === 'N/A') return 'N/A';
     return backVocalArray.join(', ');
 }
+
+function getRehearsalDisplay(rehearsalData) {
+    if (!rehearsalData) {
+        return `
+            <div class="member-item na-status">
+                <span class="role">Dia:</span>
+                <span class="name">A definir</span>
+            </div>
+            <div class="member-item na-status">
+                <span class="role">Horário:</span>
+                <span class="name">A definir</span>
+            </div>
+        `;
+    }
+
+    const dayStatus = rehearsalData.day ? '' : 'na-status';
+    const timeStatus = rehearsalData.time ? '' : 'na-status';
+    
+    const dayValue = rehearsalData.day || 'A definir';
+    const timeValue = rehearsalData.time || 'A definir';
+    
+    return `
+        <div class="member-item ${dayStatus}">
+            <span class="role">Dia:</span>
+            <span class="name">${dayValue}</span>
+        </div>
+        <div class="member-item ${timeStatus}">
+            <span class="role">Horário:</span>
+            <span class="name">${timeValue}</span>
+        </div>
+    `;
+}
 function toggleScheduleDetails(scheduleId) {
     const detailsElement = document.getElementById(`details-${scheduleId}`);
     const scheduleItem = document.querySelector(`[data-schedule-id="${scheduleId}"]`);
@@ -2925,6 +3041,14 @@ function openScheduleModal() {
     
     // Add event listener for date input
     setupDateInput();
+    
+    // Se não estiver editando, definir padrão para ensaio
+    if (!currentEditingScheduleId) {
+        setTimeout(() => {
+            const defaultDay = document.querySelector('input[name="rehearsalDay"][value="Quarta-feira"]');
+            if (defaultDay) defaultDay.checked = true;
+        }, 100);
+    }
 }
 // Função para verificar permissões
 function hasPermission(action) {
@@ -2935,6 +3059,8 @@ function hasPermission(action) {
         case 'edit_schedule':
         case 'delete_schedule':
             return userLevel === 'admin' || userLevel === 'leader';
+        case 'delete_all_schedules':
+            return userLevel === 'admin' || userLevel === 'leader' || userLevel === 'pastor';
         case 'view_members':
         case 'view_songs':
             return true; // Todos podem ver
@@ -2967,8 +3093,150 @@ function closeScheduleModal() {
         datePreview.classList.remove('populated');
     }
     
+    // Limpar seção de ensaio
+    resetRehearsalSection();
+    
     currentEditingScheduleId = null;
 }
+
+// === FUNÇÕES PARA SEÇÃO DE ENSAIO === //
+function resetRehearsalSection() {
+    const customInput = document.getElementById('customDayInput');
+    
+    if (customInput) customInput.style.display = 'none';
+    
+    resetRehearsalFields();
+    
+    // Pré-selecionar "Quarta-feira" por padrão
+    const defaultDay = document.querySelector('input[name="rehearsalDay"][value="Quarta-feira"]');
+    if (defaultDay) defaultDay.checked = true;
+}
+
+function resetRehearsalFields() {
+    // Limpar seleção de dias
+    const dayRadios = document.querySelectorAll('input[name="rehearsalDay"]');
+    dayRadios.forEach(radio => radio.checked = false);
+    
+    // Limpar campos de texto
+    const customInput = document.getElementById('customDayInput');
+    const timeInput = document.getElementById('rehearsalTimeInput');
+    
+    if (customInput) customInput.value = '';
+    if (timeInput) timeInput.value = '';
+}
+
+function getRehearsalData() {
+    // Obter dia selecionado
+    const selectedDayRadio = document.querySelector('input[name="rehearsalDay"]:checked');
+    let rehearsalDay = null;
+    
+    if (selectedDayRadio) {
+        if (selectedDayRadio.value === 'outro') {
+            const customInput = document.getElementById('customDayInput');
+            rehearsalDay = customInput && customInput.value.trim() ? customInput.value.trim() : null;
+        } else {
+            rehearsalDay = selectedDayRadio.value;
+        }
+    }
+    
+    // Obter horário
+    const timeInput = document.getElementById('rehearsalTimeInput');
+    const rehearsalTime = timeInput && timeInput.value ? timeInput.value : null;
+    
+    // Sempre retornar dados do ensaio (mesmo que parciais)
+    return {
+        day: rehearsalDay,
+        time: rehearsalTime
+    };
+}
+
+function setRehearsalData(rehearsalData) {
+    if (!rehearsalData) {
+        // Sem dados de ensaio, usar padrão
+        resetRehearsalSection();
+        return;
+    }
+    
+    // Definir dia
+    const predefinedDays = ['Quarta-feira', 'Quinta-feira', 'Sábado', 'Domingo'];
+    
+    if (rehearsalData.day && predefinedDays.includes(rehearsalData.day)) {
+        // Dia pré-definido
+        const dayRadio = document.querySelector(`input[name="rehearsalDay"][value="${rehearsalData.day}"]`);
+        if (dayRadio) dayRadio.checked = true;
+    } else if (rehearsalData.day) {
+        // Dia customizado
+        const otherRadio = document.querySelector('input[name="rehearsalDay"][value="outro"]');
+        const customInput = document.getElementById('customDayInput');
+        
+        if (otherRadio) otherRadio.checked = true;
+        if (customInput) {
+            customInput.style.display = 'block';
+            customInput.value = rehearsalData.day;
+        }
+    }
+    
+    // Definir horário
+    if (rehearsalData.time) {
+        const timeInput = document.getElementById('rehearsalTimeInput');
+        if (timeInput) timeInput.value = rehearsalData.time;
+    }
+}
+
+// Adicionar event listener para o radio "Outro dia"
+document.addEventListener('DOMContentLoaded', function() {
+    // Event listener para mostrar/esconder campo customizado
+    const otherDayRadio = document.getElementById('otherDayOption');
+    const customInput = document.getElementById('customDayInput');
+    
+    if (otherDayRadio && customInput) {
+        document.querySelectorAll('input[name="rehearsalDay"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'outro') {
+                    customInput.style.display = 'block';
+                    customInput.focus();
+                } else {
+                    customInput.style.display = 'none';
+                    customInput.value = '';
+                }
+            });
+        });
+    }
+    
+    // Event listener para confirmação de apagar escalas
+    setupDeleteAllConfirmation();
+});
+
+function setupDeleteAllConfirmation() {
+    const confirmText = document.getElementById('confirmationText');
+    const confirmBtn = document.getElementById('confirmDeleteAllBtn');
+    
+    if (confirmText && confirmBtn && !confirmText.hasAttribute('data-listener-added')) {
+        confirmText.addEventListener('input', function() {
+            console.log('Digitando:', this.value); // Debug
+            // Converter para maiúsculo para comparação, independentemente de como foi digitado
+            const isValid = this.value.trim().toUpperCase() === 'APAGAR TUDO';
+            console.log('Válido:', isValid, '(comparando:', this.value.trim().toUpperCase(), ')'); // Debug
+            confirmBtn.disabled = !isValid;
+            
+            // Adicionar feedback visual
+            if (isValid) {
+                this.style.borderColor = '#10B981';
+                this.style.backgroundColor = '#ECFDF5';
+                this.style.color = '#065F46';
+                console.log('Botão habilitado!'); // Debug
+            } else {
+                this.style.borderColor = '#DC2626';
+                this.style.backgroundColor = '#FEF2F2';
+                this.style.color = '#7F1D1D';
+            }
+        });
+        
+        // Marcar que o listener foi adicionado
+        confirmText.setAttribute('data-listener-added', 'true');
+    }
+}
+
 function populateScheduleSelects() {
     const vocalSelect = document.querySelector('select[name="ministro"]');
     const backVocalSelector = document.getElementById('backVocalSelector');
@@ -3159,6 +3427,9 @@ function handleScheduleSubmit(e) {
     const backVocalHidden = document.getElementById('backVocalHidden');
     const backVocalValues = backVocalHidden && backVocalHidden.value ? 
         backVocalHidden.value.split(',').filter(v => v.trim()) : [];
+    // Coletar dados do ensaio
+    const rehearsalData = getRehearsalData();
+    
     const scheduleData = {
         date: formData.get('date') || document.querySelector('input[type="text"]').value,
         status: 'published',
@@ -3171,7 +3442,8 @@ function handleScheduleSubmit(e) {
             bateria: document.querySelector('select[name="bateria"]').value,
             baixo: document.querySelector('select[name="baixo"]').value,
             projetor: document.querySelector('select[name="projetor"]').value
-        }
+        },
+        rehearsal: rehearsalData
     };
     if (isEditing) {
         // Update existing schedule
@@ -3272,15 +3544,25 @@ function shareSchedule(id) {
             }
         };
 
-        const text = `ESCALA MINISTÉRIO DE LOUVOR - ${formatShareDate(schedule.date)}\n\n` +
-                    `🎤 Ministro: ${schedule.roles.ministro || 'Não definido'}\n` +
-                    `🎵 Back Vocal: ${schedule.roles.back_vocal.length ? schedule.roles.back_vocal.join(', ') : 'Não definido'}\n` +
-                    `🎸 Violão: ${schedule.roles.violao || 'Não definido'}\n` +
-                    `🎸 Guitarra: ${schedule.roles.guitarra || 'Não definido'}\n` +
-                    `🎹 Teclado: ${schedule.roles.teclado || 'Não definido'}\n` +
-                    `🥁 Bateria: ${schedule.roles.bateria || 'Não definido'}\n` +
-                    `🎸 Baixo: ${schedule.roles.baixo || 'Não definido'}\n` +
-                    `🖥️ Projetor: ${schedule.roles.projetor || 'Não definido'}`;
+        // Criar texto base da escala
+        let text = `ESCALA MINISTÉRIO DE LOUVOR - ${formatShareDate(schedule.date)}\n\n` +
+                   `🎤 Ministro: ${schedule.roles.ministro || 'Não definido'}\n` +
+                   `🎵 Back Vocal: ${schedule.roles.back_vocal.length ? schedule.roles.back_vocal.join(', ') : 'Não definido'}\n` +
+                   `🎸 Violão: ${schedule.roles.violao || 'Não definido'}\n` +
+                   `🎸 Guitarra: ${schedule.roles.guitarra || 'Não definido'}\n` +
+                   `🎹 Teclado: ${schedule.roles.teclado || 'Não definido'}\n` +
+                   `🥁 Bateria: ${schedule.roles.bateria || 'Não definido'}\n` +
+                   `🎸 Baixo: ${schedule.roles.baixo || 'Não definido'}\n` +
+                   `🖥️ Projetor: ${schedule.roles.projetor || 'Não definido'}`;
+        
+        // Sempre adicionar informações do ensaio
+        text += `\n\n🎵 ENSAIO:`;
+        if (schedule.rehearsal && schedule.rehearsal.day) {
+            const rehearsalTime = schedule.rehearsal.time ? ` às ${schedule.rehearsal.time}` : '';
+            text += `\n📅 Dia: ${schedule.rehearsal.day}${rehearsalTime}`;
+        } else {
+            text += `\n📅 Dia: A definir`;
+        }
         
         // Registrar atividade de compartilhamento
         addActivity(
@@ -3940,6 +4222,92 @@ function closeConfirmDeleteModal() {
     document.getElementById('confirmDeleteModal').style.display = 'none';
     scheduleToDelete = null;
 }
+
+// === FUNÇÕES PARA APAGAR TODAS AS ESCALAS === //
+function showDeleteAllSchedulesConfirmation() {
+    const modal = document.getElementById('confirmDeleteAllSchedulesModal');
+    const confirmText = document.getElementById('confirmationText');
+    const confirmBtn = document.getElementById('confirmDeleteAllBtn');
+    
+    // Resetar campos
+    confirmText.value = '';
+    confirmBtn.disabled = true;
+    
+    // Resetar estilos
+    confirmText.style.borderColor = '#DC2626';
+    confirmText.style.backgroundColor = '#FEF2F2';
+    confirmText.style.color = '#7F1D1D';
+    
+    // Configurar o listener se ainda não estiver configurado
+    setupDeleteAllConfirmation();
+    
+    // Focar no campo de confirmação
+    setTimeout(() => {
+        confirmText.focus();
+    }, 100);
+    
+    modal.style.display = 'flex';
+    modal.classList.add('show');
+}
+
+function closeDeleteAllSchedulesModal() {
+    const modal = document.getElementById('confirmDeleteAllSchedulesModal');
+    modal.style.display = 'none';
+    modal.classList.remove('show');
+}
+
+function confirmDeleteAllSchedules() {
+    const confirmText = document.getElementById('confirmationText');
+    
+    if (confirmText.value.trim().toUpperCase() !== 'APAGAR TUDO') {
+        showErrorMessage('Por favor, digite exatamente "APAGAR TUDO" para confirmar.');
+        return;
+    }
+    
+    const totalSchedules = AppState.schedules.length;
+    
+    // Executar a exclusão
+    AppState.schedules = [];
+    saveToLocalStorage();
+    
+    // Atualizar interface
+    renderSchedules();
+    updateDashboardData();
+    
+    // Fechar modal
+    closeDeleteAllSchedulesModal();
+    
+    // Registrar atividade
+    addActivity(
+        'system',
+        'Todas as escalas foram apagadas',
+        `${AppState.currentUser.name} apagou todas as ${totalSchedules} escalas do sistema`,
+        'danger'
+    );
+    
+    // Mostrar mensagem de sucesso
+    showSuccessMessage(`✅ Todas as ${totalSchedules} escalas foram apagadas com sucesso!`);
+    
+    console.log('🗑️ Todas as escalas foram apagadas pelo usuário:', AppState.currentUser.name);
+}
+
+// FUNÇÃO DE EMERGÊNCIA PARA RESTAURAR ESCALAS
+function forceRestoreSchedules() {
+    console.log('🚨 RESTAURANDO ESCALAS DE EMERGÊNCIA...');
+    
+    // Limpar localStorage
+    localStorage.removeItem('feedsAppState');
+    
+    // Recarregar dados mock
+    loadMockData();
+    
+    // Forçar atualização da interface
+    renderSchedules();
+    updateDashboardData();
+    
+    showSuccessMessage('✅ Escalas restauradas com sucesso!');
+    console.log('✅ Escalas restauradas:', AppState.schedules);
+}
 // Enhanced editSchedule function
 function enhancedEditSchedule(scheduleId) {
     // Verificar permissões
@@ -3956,23 +4324,51 @@ function enhancedEditSchedule(scheduleId) {
     // Update modal title with visual indicator
     document.getElementById('scheduleModalTitle').innerHTML = '<i class="fas fa-edit"></i> Editar Escala';
     document.getElementById('saveScheduleBtn').innerHTML = '<i class="fas fa-save"></i> Atualizar Escala';
-    // Fill form with schedule data
-    document.getElementById('scheduleId').value = schedule.id;
-    document.getElementById('scheduleDate').value = schedule.date;
     
-    // Convert existing date format back to date input if needed
-    parseExistingScheduleDate(schedule.date);
-            document.getElementById('vocalPrincipal').value = schedule.roles.ministro || '';
-    document.getElementById('violaoSelect').value = schedule.roles.violao || '';
-    document.getElementById('guitarraSelect').value = schedule.roles.guitarra || '';
-    document.getElementById('tecladoSelect').value = schedule.roles.teclado || '';
-    document.getElementById('bateriaSelect').value = schedule.roles.bateria || '';
-    document.getElementById('baixoSelect').value = schedule.roles.baixo || '';
-    document.getElementById('projetorSelect').value = schedule.roles.projetor || '';
-    // Handle back vocal (novo seletor)
-    if (schedule.roles.back_vocal) {
-        setBackVocalValues(schedule.roles.back_vocal);
-    }
+    // Abrir modal primeiro
+    openScheduleModal();
+    
+    // Aguardar um pouco mais para garantir que os selects foram carregados
+    setTimeout(() => {
+        // Fill form with schedule data
+        document.getElementById('scheduleId').value = schedule.id;
+        document.getElementById('scheduleDate').value = schedule.date;
+        
+        // Convert existing date format back to date input if needed
+        parseExistingScheduleDate(schedule.date);
+        
+        // Preencher campos com dados da escala
+        const vocalSelect = document.querySelector('select[name="ministro"]');
+        const violaoSelect = document.querySelector('select[name="violao"]');
+        const guitarraSelect = document.querySelector('select[name="guitarra"]');
+        const tecladoSelect = document.querySelector('select[name="teclado"]');
+        const bateriaSelect = document.querySelector('select[name="bateria"]');
+        const baixoSelect = document.querySelector('select[name="baixo"]');
+        const projetorSelect = document.querySelector('select[name="projetor"]');
+        
+        console.log('Preenchendo campos da escala:', schedule.roles);
+        
+        if (vocalSelect) vocalSelect.value = schedule.roles.ministro || '';
+        if (violaoSelect) violaoSelect.value = schedule.roles.violao || '';
+        if (guitarraSelect) guitarraSelect.value = schedule.roles.guitarra || '';
+        if (tecladoSelect) tecladoSelect.value = schedule.roles.teclado || '';
+        if (bateriaSelect) bateriaSelect.value = schedule.roles.bateria || '';
+        if (baixoSelect) baixoSelect.value = schedule.roles.baixo || '';
+        if (projetorSelect) projetorSelect.value = schedule.roles.projetor || '';
+        
+        // Handle back vocal (novo seletor)
+        if (schedule.roles.back_vocal) {
+            setBackVocalValues(schedule.roles.back_vocal);
+        }
+        
+        // Carregar dados do ensaio se existirem
+        if (schedule.rehearsal) {
+            setRehearsalData(schedule.rehearsal);
+        }
+        
+        console.log('Campos preenchidos com sucesso');
+    }, 300);
+    
     // Registrar atividade de início de edição
     addActivity(
         'schedule_edit_start',
@@ -3980,7 +4376,6 @@ function enhancedEditSchedule(scheduleId) {
         `${AppState.currentUser.name} iniciou edição da escala de ${schedule.date}`,
         'info'
     );
-    openScheduleModal();
 }
 // Override the original editSchedule function
 window.editSchedule = enhancedEditSchedule;
