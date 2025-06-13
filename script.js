@@ -243,6 +243,7 @@ const mockData = {
         { username: 'flavia', password: 'melodia987', name: 'Flávia', role: 'Vocal', level: 'member', photo: 'foto/Flavia.jpeg' },
         { username: 'dudinha', password: 'vocal2025', name: 'Dudinha', role: 'Vocal', level: 'member', photo: 'foto/Dudinha.jpeg' },
         { username: 'larissa', password: 'harmonia234', name: 'Larissa', role: 'Vocal', level: 'member', photo: 'foto/Larissa.jpeg' },
+        { username: 'tiochico', password: 'TioChico@2024', name: 'Thiago (Tio chico)', role: 'Vocal', level: 'member', photo: 'foto/Thiago.jpeg' },
         // === PROJETOR === //
         { username: 'murillo', password: 'projetor2025', name: 'Murillo', role: 'Projetor', level: 'member', photo: 'foto/Murillo.jpeg' },
         // === CONTA ADMIN GERAL === //
